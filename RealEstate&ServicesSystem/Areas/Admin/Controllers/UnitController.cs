@@ -121,10 +121,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Owner},{DS.Role_Employee},{DS.Role_Agent}")]
         public async Task<IActionResult> Add(AddUnitmodel addUnitmodel, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(addUnitmodel);
-            }
+            
             try
             { 
             var user =await _userManager.GetUserAsync(User);

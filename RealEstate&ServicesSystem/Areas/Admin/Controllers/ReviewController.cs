@@ -49,8 +49,11 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         [Authorize(Roles = $"{DS.Role_User},{DS.Role_Admin}")]
         public async Task<IActionResult> AddReview(int id, CancellationToken cancellationToken)
         {
-            var userrequest = await _userrequestRepository.GetoneAsync(u => u.ListingId == id, cancellationToken: cancellationToken, tracking: false);
-            if(userrequest == null)
+            var user = await _userManager.GetUserAsync(User);
+
+            var userrequest = (await _userrequestRepository.GetoneAsync(u => u.ListingId == id , cancellationToken: cancellationToken, tracking: false));
+            var canReview = HttpContext.Session.GetString("CanReview_"+id + "_" + user.Id);
+            if (userrequest == null || string.IsNullOrEmpty(canReview))
             {
                 TempData["error"] = "You cannot add a review for this listing as you have not made a request for it.";
                 return RedirectToAction("Details","Home", new {area="User", id = id });

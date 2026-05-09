@@ -75,8 +75,9 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
                 };
                 await _userrequestRepository.AddAsync(req, cancellationToken: cancellationToken);
                 await _userrequestRepository.SaveChangesAsync(cancellationToken);
-
+                
                 var listing = await _listingRepository.GetoneAsync(e => e.Id == addRequestVM.Listing.Id, includes: [e => e.Unit!, equals => equals.Unit.Property], cancellationToken: cancellationToken);
+                HttpContext.Session.SetString("CanReview_" +listing.Id + "_" + sentUser.Id, "true");
 
                 var notification = new Notification()
                 {

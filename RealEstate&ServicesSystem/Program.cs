@@ -72,21 +72,34 @@ namespace RealEstate_ServicesSystem
             builder.Services.AddScoped<ISupImgRepository, SupImgRepository>();
             builder.Services.AddScoped<IDBintializer, DBintializer>();
 
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             var app = builder.Build();
             var SCOPE = app.Services.CreateScope();
             var DBinitializer = SCOPE.ServiceProvider.GetService<IDBintializer>();
             DBinitializer!.Initialize();
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                
             }
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthorization();
             app.MapHub<NotificationHub>("/notificationHub");
