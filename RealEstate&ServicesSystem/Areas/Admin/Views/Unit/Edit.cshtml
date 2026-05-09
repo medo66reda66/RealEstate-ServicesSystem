@@ -1,0 +1,238 @@
+﻿@using RealEstate_ServicesSystem.Viewmodel
+@model EditUnitModel
+
+<h3 class="text-white mb-4">✏️ Edit Unit</h3>
+
+<form method="post" enctype="multipart/form-data" class="p-4 rounded" style="background:#1e1e2f;">
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" name="DeletedImages" id="DeletedImages" />
+    
+    
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Unit Number</label>
+            <input asp-for="UnitNumber" class="form-control" readonly/>
+            <span asp-validation-for="UnitNumber" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Bedrooms</label>
+            <input asp-for="Bedrooms" class="form-control" />
+            <span asp-validation-for="Bedrooms" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Bathrooms</label>
+            <input asp-for="Bathrooms" class="form-control" />
+            <span asp-validation-for="Bathrooms" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Area Size</label>
+            <input asp-for="AreaSize" class="form-control" />
+            <span asp-validation-for="AreaSize" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Floor Number</label>
+            <input asp-for="FloorNumber" class="form-control" />
+            <span asp-validation-for="FloorNumber" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Price</label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Status</label>
+            <select asp-for="status" class="form-control"
+                    asp-items="Html.GetEnumSelectList<UnitStatus>()"></select>
+            <span asp-validation-for="status" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Purpose</label>
+            <select asp-for="Purpose" class="form-control"
+                    asp-items="Html.GetEnumSelectList<UnitPurpose>()"></select>
+            <span asp-validation-for="Purpose" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Type</label>
+            <select asp-for="type" class="form-control"
+                    asp-items="Html.GetEnumSelectList<UnitType>()"></select>
+            <span asp-validation-for="type" class="text-danger"></span>
+        </div>
+
+        <!-- Property -->
+        <div class="col-md-6 mb-3">
+            <label class="text-white">Property</label>
+            <select asp-for="propertyId" class="form-control">
+                @foreach (var prop in Model.Property)
+                {
+                    @if(prop.Id == Model.propertyId)
+                    {
+                        <option value="@prop.Id" selected>
+                            @(prop.City + "," + prop.Location)
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@prop.Id">
+                            @(prop.City + "," + prop.Location)
+                        </option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-md-12 mb-3">
+            <label class="text-white">Description</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+    </div>
+
+    <!-- 🔴 MAIN IMAGE -->
+    <div class="mb-4">
+        <label class="text-white">Main Image</label><br />
+
+        <!-- القديمة -->
+        <img id="mainPreview"
+             src="~/UnitImages/@Model.ExistingImageUrl"
+             style="width:130px;height:130px;object-fit:cover;border-radius:10px;border:2px solid #444;" />
+
+        <input type="file" asp-for="ImageUrl" class="form-control mt-2" id="mainInput" />
+    </div>
+
+    <!-- 🟡 SUB IMAGES -->
+    <div class="mb-3">
+        <label class="text-white">Existing Images</label>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            @foreach (var img in Model.ExistingUnitSupImgs)
+            {
+                <div class="img-box">
+                    <img src="~/UnitSupImages/@img.ImageUrl" />
+
+                    <!-- زر الحذف -->
+                    <button type="button"
+                            class="delete-btn"
+                            onclick="markDelete(@img.Id, this)">
+                        ✖
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="text-white">Add New Images</label>
+        <input type="file" asp-for="UnitSupImgs" multiple class="form-control" id="multiInput" />
+    </div>
+
+    <!-- preview -->
+    <div id="multiPreview" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+
+    <button class="btn btn-success w-100 mt-3">💾 Update</button>
+
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+<script>
+    // ✅ main image preview
+    document.getElementById("mainInput").addEventListener("change", function () {
+        let file = this.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("mainPreview").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // ✅ multiple images preview
+    const multiInput = document.getElementById("multiInput");
+    const preview = document.getElementById("multiPreview");
+
+    multiInput.addEventListener("change", function () {
+
+        preview.innerHTML = "";
+
+        for (let file of this.files) {
+
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                let img = document.createElement("img");
+
+                img.src = e.target.result;
+                img.style.width = "80px";
+                img.style.height = "80px";
+                img.style.objectFit = "cover";
+                img.style.borderRadius = "8px";
+                img.style.border = "2px solid #28a745";
+
+                preview.appendChild(img);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+        let deletedImages = [];
+
+    function markDelete(id, btn) {
+        deletedImages.push(id);
+
+        btn.parentElement.style.display = "none";
+
+        document.getElementById("DeletedImages").value =
+            deletedImages.join(",");
+    }
+</script>
+
+<style>
+    .img-box {
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #555;
+        }
+
+    .delete-btn {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 22px;
+        height: 22px;
+        border: none;
+        border-radius: 50%;
+        background: red;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .delete-btn:hover {
+            background: darkred;
+        }
+</style>

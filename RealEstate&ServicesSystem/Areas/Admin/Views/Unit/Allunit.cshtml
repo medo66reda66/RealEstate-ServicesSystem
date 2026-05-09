@@ -1,0 +1,423 @@
+﻿@using RealEstate_ServicesSystem.Utilities.DBinitializer
+@model IEnumerable<Unit>
+
+@section Scripts {
+
+    @if (TempData["success"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+
+            toastr.success('@TempData["success"]');
+
+        </script>
+    }
+    @if(@TempData["error"] != null)
+    {
+        <script>
+                  toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": true,
+                      "positionClass": "toast-top-center",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                                }
+            toastr.error('@TempData["error"]');
+        </script>
+    }
+}
+
+@if(User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee))
+ {
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-white">🏠 Units List</h3>
+    <a href="/Admin/Unit/Add" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Unit
+    </a>
+</div>
+
+<div class="filter-card">
+
+    <button class="filter-toggle" onclick="toggleFilter()">
+        🏢 Filter Units
+    </button>
+
+    <form id="filterForm" class="filter-form" method="get">
+
+        <div class="filter-grid">
+
+            <input type="text" name="unitNumber" value="@ViewBag.UnitNumber" placeholder="Unit Number" />
+
+            <input type="number" name="bedrooms" value="@ViewBag.Bedrooms" placeholder="Bedrooms" />
+
+            <input type="number" name="bathrooms" value="@ViewBag.Bathrooms" placeholder="Bathrooms" />
+            <input type="number" name="areaSize" value="@ViewBag.AreaSize" placeholder="Area Size" />
+
+            <input type="number" name="floorNumber" value="@ViewBag.FloorNumber" placeholder="Floor Number" />
+
+            <input type="number" name="price" value="@ViewBag.Price" placeholder="Price" />
+
+            <select name="status">
+                <option value="">Status</option>
+
+                    <option value="Available">Available</option>
+                    <option value="Sold">Sold</option>
+                    <option value="Rented">Rented</option>
+            </select>
+
+            <select name="purpose">
+                <option value="">Purpose</option>
+                <option value="Sale">Sale</option>
+                <option value="Rent">Rent</option>
+            </select>
+
+            <select name="type">
+                <option value="">Type</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Villa">Villa</option>
+                <option value="House">House</option>
+                <option value="Condo">Condo</option>
+                <option value="Townhouse">Townhouse</option>
+                <option value="Studio">Studio</option>
+            </select>
+
+            <button type="submit" class="apply-btn">
+                Apply Filter
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<table class="table table-dark table-hover align-middle rounded overflow-hidden">
+    <thead class ="table-secondary text-dark">
+        <tr>
+            <th>Unit No</th>
+            <th>Property</th>
+            <th>Type</th>
+            <th>Purpose</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>AreaSize</th>
+            <th>Rooms</th>
+            <th>Floor</th>
+            <th>Main Image</th>
+            <th>Sub Images</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UnitNumber</td>
+                <td>
+                    @(item.Property != null ? item.Property.City + ", " + item.Property.Location : "N/A")
+                </td>
+                <td>@item.type</td>
+                <td>@item.Purpose</td>
+                <td>
+                    @if (item.status == UnitStatus.Available)
+                    {
+                        <span class="badge bg-success">Available</span>
+                    }
+                    else if (item.status == UnitStatus.Sold)
+                    {
+                        <span class="badge bg-danger">Sold</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Rented</span>
+                    }
+                </td>
+
+                <td>@item.Price</td>
+                <td>@(item.AreaSize+"m")</td>
+
+                <td>
+                    🛏 @item.Bedrooms <br />
+                    🚿 @item.Bathrooms
+                </td>
+                <td>
+                    @item.FloorNumber
+                </td>
+                
+
+                <!-- MAIN IMAGE -->
+                <td>
+                    <img src="~/UnitImages/@item.ImageUrl"
+                         style="width:70px;height:70px;object-fit:cover;border-radius:8px;" />
+                </td>
+
+                <!-- SUB IMAGES -->
+                <td>
+                    @if (item.UnitSupImgs != null && item.UnitSupImgs.Any())
+                    {
+                        <div style="display:flex; gap:5px; flex-wrap:wrap; justify-content:center;">
+                            @foreach (var img in item.UnitSupImgs)
+                            {
+                                <img src="~/UnitSupImages/@img.ImageUrl"
+                                     style="width:45px;height:45px;object-fit:cover;border-radius:5px;border:1px solid #555;" />
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No Images</span>
+                    }
+                </td>
+
+                <!-- ACTIONS -->
+                <td>
+                    <a asp-action="Details" asp-controller="Unit" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
+
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post"
+                          style="display:inline;"
+                          onsubmit="return confirm('هل أنت متأكد من حذف الوحدة؟');">
+
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="pagination">
+
+    <a href="?page=1" class="page-btn">First</a>
+    @if (ViewBag.CurrentPage > 1)
+    {
+        <a href="?page=@(ViewBag.CurrentPage - 1)" class="page-btn">
+            Prev
+        </a>
+    }
+
+    @for (int i = 1; i <= @ViewBag.TotalPages; i++)
+    {
+        <a href="?page=@i"
+           class="page-btn @(i == ViewBag.CurrentPage ? "active" : "")">
+            @i
+        </a>
+    }
+    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+    {
+        <a href="?page=@(ViewBag.CurrentPage + 1)" class="page-btn">
+            Next
+        </a>
+    }
+    <a href="?page=@ViewBag.TotalPages" class="page-btn">
+        Last
+    </a>
+
+    </div>
+}else
+{
+    <p class="success-message">✔ The operation successfully</p>
+
+    <style>
+        .success-message {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            font-weight: 500;
+            width: fit-content;
+            margin: 10px auto;
+            animation: fadeIn 0.4s ease;
+        }
+    </style>
+
+    <script>
+        setTimeout(() =>
+        {
+            const msg = document.querySelector(".success-message");
+            if (msg)
+            {
+                msg.style.transition = "0.5s";
+                msg.style.opacity = "0";
+                setTimeout(() => msg.remove(), 500);
+            }
+        }, 3000);
+    </script>
+}
+
+ <style>
+     .ultra-dark-table {
+    background-color: #0f0f14;   /* أسود غامق جدًا */
+     color: #0f0f14;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+}
+
+.ultra-dark-table thead {
+    background-color: #141420; /* أغمق من الجسم */
+    color: #ffffff;
+}
+
+.ultra-dark-table th,
+.ultra-dark-table td {
+    border: none !important;
+    padding: 14px;
+}
+
+.ultra-dark-table tbody tr {
+    background-color: #151520;
+    transition: 0.25s ease;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.ultra-dark-table tbody tr:hover {
+    background-color: #1f1f2e;
+    transform: scale(1.01);
+}
+
+    .filter-card {
+        background: #1e1e2f;
+        padding: 15px;
+        border-radius: 12px;
+        color: white;
+        width: 100%;
+        max-width: 900px;
+        margin: 20px auto;
+    }
+
+    .filter-toggle {
+        width: 100%;
+        padding: 12px;
+        background: #28a745;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .filter-form {
+        margin-top: 15px;
+        display: none;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+        .filter-grid input,
+        .filter-grid select {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            background: #2b2b3d;
+            color: white;
+        }
+
+            .filter-grid input::placeholder {
+                color: #aaa;
+            }
+
+    .apply-btn {
+        grid-column: span 3;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .apply-btn:hover {
+            background: #0056b3;
+        }
+
+     (max-width: 768px) {
+        .filter-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .apply-btn {
+        grid-column: span 1;
+    }
+
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 30px 0;
+        flex-wrap: wrap;
+    }
+
+    .page-btn {
+        padding: 8px 14px;
+        background: #1e1e2f;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.3s;
+        border: 1px solid #333;
+    }
+
+        .page-btn:hover {
+            background: #28a745;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .page-btn.active {
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            pointer-events: none;
+        }
+</style>
+
+ <script>
+         function toggleFilter() {
+        const form = document.getElementById("filterForm");
+
+        form.style.display =
+            form.style.display === "block" ? "none" : "block";
+    }
+</script>

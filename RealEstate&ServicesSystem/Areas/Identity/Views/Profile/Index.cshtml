@@ -1,0 +1,293 @@
+﻿@model RealEstate_ServicesSystem.Viewmodel.ApplicatinUserVM
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .profile-container {
+        max-width: 900px;
+        margin: 50px auto;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        overflow: hidden;
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        padding: 30px;
+        text-align: center;
+        color: white;
+    }
+
+        .profile-header h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+    .profile-body {
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #2a5298;
+            box-shadow: 0 0 8px rgba(42,82,152,0.4);
+        }
+
+    .btn-custom {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+        .btn-custom:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+    .section-title {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #2a5298;
+    }
+
+     fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .password-box {
+        position: relative;
+    }
+
+        .password-box input {
+            padding-right: 45px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+            .password-box input:focus {
+                box-shadow: 0 0 8px rgba(0,123,255,0.3);
+                border-color: #007bff;
+            }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        user-select: none;
+        transition: 0.2s;
+    }
+
+        .toggle-password:hover {
+            transform: translateY(-50%) scale(1.2);
+        }
+    
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h2>👤 My Profile</h2>
+    </div>
+
+    <div class="profile-body">
+
+        <h4 class="section-title">Update Information</h4>
+        <form asp-action="UpdateProfile" id="profileForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="FullName"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" readonly />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-custom">💾 Save Changes</button>
+        </form>
+
+        <hr />
+
+        <h4 class="section-title">Change Password</h4>
+        <form asp-action="UpdatePassword" id="passwordForm">
+
+            <div class="form-group password-wrapper">
+                <label asp-for="CurrentPassword"></label>
+
+                <div class="password-box">
+                    <input asp-for="CurrentPassword" type="password" class="form-control" id="currentPassword" />
+
+                    <span class="toggle-password"
+                          onclick="togglePassword('currentPassword', this)">
+                        👁️
+                    </span>
+                </div>
+
+                <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-group password-wrapper">
+                <label asp-for="NewPassword"></label>
+
+                <div class="password-box">
+                    <input asp-for="NewPassword" type="password" class="form-control" id="newPassword" />
+
+                    <span class="toggle-password"
+                          onclick="togglePassword('newPassword', this)">
+                        👁️
+                    </span>
+                </div>
+
+                <span asp-validation-for="NewPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-custom">🔒 Update Password</button>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    @if (TempData["success"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+
+            toastr.success('@TempData["success"]');
+
+        </script>
+    }
+    @if (@TempData["error"] != null)
+    {
+        <script>
+                  toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": true,
+                      "positionClass": "toast-top-center",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                                }
+            toastr.error('@TempData["error"]');
+        </script>
+    }
+    <script>
+                function togglePassword(id, icon) {
+            var input = document.getElementById(id);
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.textContent = "🙈";
+            } else {
+                input.type = "password";
+                icon.textContent = "👁️";
+            }
+        }
+        
+        $(document).ready(function () {
+
+            // toastr messages
+            var success = '@TempData["success"]';
+            var error = '@TempData["error"]';
+
+            if (success) {
+                toastr.success(success);
+            }
+
+            if (error) {
+                toastr.error(error);
+            }
+
+            // simple animation on submit
+            $('#profileForm, #passwordForm').on('submit', function () {
+                toastr.info('Processing...');
+            });
+        });
+    </script>
+}

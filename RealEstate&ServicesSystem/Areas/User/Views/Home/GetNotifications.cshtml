@@ -1,0 +1,513 @@
+@using RealEstate_ServicesSystem.Utilities.DBinitializer
+@using RealEstate_ServicesSystem.Viewmodel
+@model NotificatinVM
+
+@{
+    Layout = "~/Views/Shared/_LayoutNotification.cshtml";
+}
+
+ @if(User.IsInRole($"{DS.Role_Agent}"))
+{
+<div class="notifications-container">
+
+    <h2 class="section-title mb-4">🔔 Notifications</h2>
+
+    @if (Model.NotificationListing == null || !Model.NotificationListing.Any())
+    {
+        <div class="alert alert-info">
+            No notifications to display.
+        </div>
+    }
+    else
+    {
+        <div class="notif-list">
+
+            @foreach (var notification in Model.NotificationListing)
+            {
+                <a href="@notification.Url"
+                   class="notif-item"
+                   onclick="markAsRead(@notification.Id, this)">
+
+                    <div class="notif-icon">
+                        🔔
+                    </div>
+
+                    <div class="notif-content">
+                        <div class="notif-message" id="notif-from-@notification.Id">
+                            <strong>From:</strong> @notification.FromUser?.Email
+                        </div>
+
+                        <div class="notif-message" id="notif-message-@notification.Id">
+                            <strong>Message:@notification.Message</strong> <br />
+                           phone: @notification.FromUser.PhoneNumber
+                        </div>
+
+                        <div class="notif-date" id="notif-date-@notification.Id">
+                            @notification.CreatedAt.ToString("MMM dd, yyyy - hh:mm tt")
+                        </div>
+                    </div>
+
+                    @if (!notification.IsRead)
+                    {
+                        <span class="notif-dot"></span>
+                    }
+
+                </a>
+            }
+
+        </div>
+    }
+
+</div>
+}
+@if(User.IsInRole($"{DS.Role_Owner}"))
+{
+<div class="notifications-container">
+
+    <h2 class="section-title mb-4">🔔 Notifications</h2>
+
+    @if (Model.NotificationOwner == null || !Model.NotificationOwner.Any())
+    {
+        <div class="empty-notification-box">
+
+            <div class="empty-bell">
+                🔔
+            </div>
+
+            <h3>No Notifications Yet</h3>
+
+            <p>
+                Looks like everything is quiet right now ✨
+                <br />
+                New notifications will appear here automatically.
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <div class="notif-list">
+
+            @foreach (var notification in Model.NotificationOwner)
+            {
+                <a href="@notification.Url"
+                   class="notif-item"
+                   onclick="markAsRead(@notification.Id, this)">
+
+                    <div class="notif-icon">
+                        🔔
+                    </div>
+
+                    <div class="notif-content">
+                        <div class="notif-message" id="notif-from-@notification.Id">
+                            <strong>From:</strong> @notification.FromUser?.Email
+                        </div>
+
+                        <div class="notif-message" id="notif-message-@notification.Id">
+                            <strong>Message:@notification.Message</strong> <br />
+                           phone: @notification.FromUser.PhoneNumber
+                        </div>
+
+                        <div class="notif-date" id="notif-date-@notification.Id">
+                            @notification.CreatedAt.ToString("MMM dd, yyyy - hh:mm tt")
+                        </div>
+                    </div>
+
+                    @if (!notification.IsRead)
+                    {
+                        <span class="notif-dot"></span>
+                    }
+
+                </a>
+            }
+
+        </div>
+    }
+
+</div>
+}
+<script>
+    function markAsRead(id, element) {
+
+        // optional: UI instant change (remove red dot)
+        let dot = element.querySelector(".notif-dot");
+        if (dot) {
+            dot.remove();
+        }
+
+        // send request to backend
+        fetch(`/Notification/MarkAsRead/${id}`, {
+            method: "POST"
+        })
+        .then(res => {
+            if (!res.ok) {
+                console.log("Failed to mark as read");
+            }
+        });
+    }
+
+    // Handle real-time notification received while on this page
+    function onNotificationReceived(message, url) {
+        // For the best experience and to ensure all data is correctly loaded, 
+        // we'll refresh the notification list.
+        // Alternatively, we could append the new notification HTML.
+        
+        // Refresh after a short delay to allow the DB to settle if needed, 
+        // and to let the user see the toastr first.
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    }
+</script>
+<style>
+    /* =========================
+       EMPTY NOTIFICATIONS
+    ========================= */
+
+    .empty-notification-box {
+        width: 100%;
+        max-width: 650px;
+        margin: 60px auto;
+        background: rgba(255,255,255,0.95);
+        border-radius: 28px;
+        padding: 50px 35px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        animation: fadeUp .5s ease;
+    }
+
+        /* glowing background */
+
+        .empty-notification-box::before {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: rgba(37,99,235,0.08);
+            border-radius: 50%;
+            top: -120px;
+            right: -80px;
+        }
+
+    /* bell */
+
+    .empty-bell {
+        width: 95px;
+        height: 95px;
+        margin: auto auto 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        background: linear-gradient( 135deg, #2563eb, #3b82f6 );
+        color: white;
+        box-shadow: 0 10px 30px rgba(37,99,235,0.25);
+        animation: ring 2s infinite;
+    }
+
+    /* title */
+
+    .empty-notification-box h3 {
+        font-size: 30px;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 14px;
+    }
+
+    /* text */
+
+    .empty-notification-box p {
+        color: #6b7280;
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    /* animation */
+
+     ring {
+        0%
+
+    {
+        transform: rotate(0);
+    }
+
+    5% {
+        transform: rotate(10deg);
+    }
+
+    10% {
+        transform: rotate(-10deg);
+    }
+
+    15% {
+        transform: rotate(6deg);
+    }
+
+    20% {
+        transform: rotate(-6deg);
+    }
+
+    25% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(0);
+    }
+
+    }
+
+     fadeUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    /* mobile */
+
+    (max - width:768px) {
+        .empty-notification-box
+
+    {
+        padding: 40px 20px;
+        border-radius: 22px;
+    }
+
+    .empty-bell {
+        width: 75px;
+        height: 75px;
+        font-size: 32px;
+    }
+
+    .empty-notification-box h3 {
+        font-size: 24px;
+    }
+
+    .empty-notification-box p {
+        font-size: 14px;
+    }
+
+    }
+    .notifications-container {
+        max-width: 900px;
+        margin: 120px auto 40px;
+        padding: 20px;
+    }
+
+    /* =========================================
+       TITLE
+    ========================================= */
+
+    .section-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 25px;
+    }
+
+    /* =========================================
+       EMPTY STATE
+    ========================================= */
+
+    .empty-state {
+        background: white;
+        border-radius: 24px;
+        padding: 50px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+        .empty-state .empty-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+            animation: floatIcon 2s infinite ease-in-out;
+        }
+
+        .empty-state h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+    /* =========================================
+       LIST
+    ========================================= */
+
+    .notif-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    /* =========================================
+       ITEM
+    ========================================= */
+
+    .notif-item {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+        padding: 22px;
+        border-radius: 22px;
+        background: rgba(255,255,255,0.95);
+        text-decoration: none;
+        transition: 0.3s ease;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+
+        .notif-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(37,99,235,0.12);
+        }
+
+        /* unread glow */
+
+        .notif-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: #2563eb;
+        }
+
+    /* =========================================
+       ICON
+    ========================================= */
+
+    .notif-icon {
+        min-width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        background: linear-gradient( 135deg, #2563eb, #3b82f6 );
+        color: white;
+        box-shadow: 0 10px 20px rgba(37,99,235,0.25);
+    }
+
+    /* =========================================
+       CONTENT
+    ========================================= */
+
+    .notif-content {
+        flex: 1;
+    }
+
+    .notif-message {
+        font-size: 15px;
+        color: #374151;
+        line-height: 1.8;
+    }
+
+        .notif-message strong {
+            color: #111827;
+        }
+
+    .notif-date {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #9ca3af;
+    }
+
+    /* =========================================
+       UNREAD DOT
+    ========================================= */
+
+    .notif-dot {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ef4444;
+        box-shadow: 0 0 10px rgba(239,68,68,0.6);
+    }
+
+    /* =========================================
+       ANIMATION
+    ========================================= */
+
+     floatIcon {
+        0%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+
+    }
+
+    /* =========================================
+       MOBILE
+    ========================================= */
+
+    (max - width:768px) {
+        .notifications-container
+
+    {
+        margin-top: 100px;
+        padding: 14px;
+    }
+
+    .section-title {
+        font-size: 24px;
+    }
+
+    .notif-item {
+        padding: 18px;
+        gap: 14px;
+    }
+
+    .notif-icon {
+        min-width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    .notif-message {
+        font-size: 14px;
+    }
+
+    .empty-state {
+        padding: 40px 20px;
+    }
+
+        .empty-state .empty-icon {
+            font-size: 55px;
+        }
+
+    }
+</style>
+

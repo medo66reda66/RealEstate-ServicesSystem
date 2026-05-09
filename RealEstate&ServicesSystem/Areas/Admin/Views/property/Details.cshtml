@@ -1,0 +1,20 @@
+﻿@model RealEstate_ServicesSystem.Models.Property
+
+
+<h2 class="text-white mb-4">🏠 Property Details</h2>
+
+<div class="card bg-dark text-white p-4">
+
+    <h4>@Model.City</h4>
+    <hr />
+
+    <p><strong>Location:</strong> @Model.Location</p>
+    <p><strong>Description:</strong> @Model.Description</p>
+    <p><strong>Address:</strong> @Model.Address</p>
+    <p><strong>Property Type:</strong> @Model.PropertyType</p>
+    <p><strong>Created At:</strong> @Model.CreatedAt</p>
+
+    <p><strong>Is Available:</strong> @(Model.IsAvailable ? "Yes" : "No")</p>
+
+    <a asp-action="Allproperty" class="btn btn-secondary mt-3">Back</a>
+</div>

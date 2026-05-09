@@ -1,0 +1,106 @@
+﻿@model Unit
+
+
+<div class="details-card">
+
+    <h3>🏠 Unit Details</h3>
+
+    <div class="details-grid">
+
+        <div><strong>Unit Number:</strong> @Model.UnitNumber</div>
+        <div><strong>Bedrooms:</strong> @Model.Bedrooms</div>
+        <div><strong>Bathrooms:</strong> @Model.Bathrooms</div>
+        <div><strong>Area Size:</strong> @Model.AreaSize</div>
+        <div><strong>Floor:</strong> @Model.FloorNumber</div>
+        <div><strong>Price:</strong> @Model.Price.ToString("C")</div>
+        <div><strong>Status:</strong> @Model.status</div>
+        <div><strong>Purpose:</strong> @Model.Purpose</div>
+        <div><strong>Type:</strong> @Model.type</div>
+
+        <div><strong>City:</strong> @Model.Property.City</div>
+        <div><strong>Location:</strong> @Model.Property.Location</div>
+
+    </div>
+
+    <!-- 🖼 Main Image -->
+    <div class="main-img">
+        <img src="~/UnitImages/@Model.ImageUrl" />
+    </div>
+
+    <!-- 🟡 Sub Images -->
+    <div class="sub-images">
+        @foreach (var img in Model.UnitSupImgs)
+        {
+            <img src="~/UnitSupImages/@img.ImageUrl" />
+        }
+    </div>
+
+    <!-- 🔙 Back -->
+    <div class="back-btn">
+        <a href="javascript:history.back()" class="btn-back">
+            ⬅ Back
+        </a>
+    </div>
+
+</div>
+<style>
+    /* Card */
+    .details-card {
+        background: #1e1e2f;
+        padding: 20px;
+        border-radius: 12px;
+        color: white;
+        max-width: 900px;
+        margin: 20px auto;
+    }
+
+    /* Grid */
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* Main Image */
+    .main-img img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    /* Sub Images */
+    .sub-images {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+        .sub-images img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+    /* Back Button */
+    .back-btn {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn-back {
+        padding: 10px 20px;
+        background: #28a745;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            background: #218838;
+        }
+</style>

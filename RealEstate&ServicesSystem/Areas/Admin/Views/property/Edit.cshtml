@@ -1,0 +1,80 @@
+﻿@model RealEstate_ServicesSystem.Viewmodel.EditProoertymodel
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="text-white">🏠 Edit Property</h3>
+        <p class="text-secondary">Update the details of the property</p>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="card p-4 shadow-lg border-0" style="background:#111a2e; border-radius:15px;">
+
+        <form method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row g-3">
+
+                <!-- City -->
+                <div class="col-md-6">
+                    <label class="form-label text-light">City</label>
+                    <input asp-for="City" class="form-control"  />
+                    <span class="text-danger" asp-validation-for="@Model.City"></span>
+                </div>
+
+                <!-- Location -->
+                <div class="col-md-6">
+                    <label class="form-label text-light">Location</label>
+                    <input asp-for="Location" class="form-control" />
+                    <span class="text-danger" asp-validation-for="@Model.Location"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="col-md-6">
+                    <label class="form-label text-light">Address</label>
+                    <input asp-for="Address" class="form-control"  />
+                    <span class="text-danger" asp-validation-for="@Model.Address"></span>
+                </div>
+
+                <!-- Property Type -->
+                <div class="col-md-6">
+                    <label class="form-label text-light">Property Type</label>
+                    <input asp-for="PropertyType" class="form-control"  />
+                    <span class="text-danger" asp-validation-for="@Model.PropertyType"></span>
+                </div>
+
+                <!-- Description -->
+                <div class="col-md-12">
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span class="text-danger" asp-validation-for="Description"></span>
+                </div>
+
+                <!-- Availability -->
+                <div class="col-md-12">
+                    <div class="form-check form-switch mt-2">
+                        <input asp-for="IsAvailable" class="form-check-input" type="checkbox">
+                        <label class="form-check-label text-light">Available</label>
+                        <span class="text-danger" asp-validation-for="@Model.IsAvailable"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="mt-4 d-flex justify-content-between">
+
+                <a href="/Admin/Property/Allproperty" class="btn btn-secondary">
+                    ⬅ Back
+                </a>
+
+                <button type="submit" class="btn btn-primary px-4">
+                    💾 Save Edit Property
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

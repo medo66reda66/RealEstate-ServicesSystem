@@ -1,0 +1,254 @@
+﻿@using RealEstate_ServicesSystem.Viewmodel
+@model AddUnitmodel
+
+<h2 class="text-white mb-4">🏠 Add New Unit</h2>
+
+
+<
+    @if (Model.Properties.Applicationuser.paid)
+    {
+    <div class="payment-box" style="background: #2e7d32; border-color: #1b5e20;">
+        <label>✅ Payment completed! You can now fill the listing details.</label>
+    </div>
+    }
+    else
+    {
+    <div class="payment-box">
+        <label>لازم تروح للدفع الأول قبل ما تملأ البيانات</label>
+        <a href="/Identity/Payment/Pay" class="payment-btn">
+            💳 Go to payment — 300 EGP
+        </a>
+    </div>
+    }
+
+<form  method="post"class="custom-form" enctype="multipart/form-data">
+
+    <div class="row">
+
+        
+        <!-- Unit Number -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Unit Number</label>
+            <input asp-for="UnitNumber" class="form-control" />
+            <span asp-validation-for="UnitNumber" class="text-danger"></span>
+        </div>
+
+        <!-- Bedrooms -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Bedrooms</label>
+            <input asp-for="Bedrooms" class="form-control" />
+            <span asp-validation-for="Bedrooms" class="text-danger"></span>
+        </div>
+
+        <!-- Bathrooms -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Bathrooms</label>
+            <input asp-for="Bathrooms" class="form-control" />
+            <span asp-validation-for="Bathrooms" class="text-danger"></span>
+        </div>
+
+        <!-- Area -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Area Size</label>
+            <input asp-for="AreaSize" class="form-control" />
+            <span asp-validation-for="AreaSize" class="text-danger"></span>
+        </div>
+
+        <!-- Floor -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Floor Number</label>
+            <input asp-for="FloorNumber" class="form-control" />
+            <span asp-validation-for="FloorNumber" class="text-danger"></span>
+        </div>
+
+        <!-- Price -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Price</label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <!-- Image -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label text-light">Main Image</label>
+            <input type="file" id="mainImageInput" asp-for="ImageUrl" class="form-control" accept="image/*" />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+
+            <!-- Preview -->
+            <img id="mainImagePreview"
+                 style="width:50%; margin-top:10px; display:none; border-radius:10px;" />
+        </div>
+        <!--- sup img-->
+        <div class="col-md-6 mb-3">
+            <label class="form-label te"xt-light">Sub Images</label>
+            <input type="file" id="subImagesInput" asp-for="UnitSupImgs" class="form-control" accept="image/*" multiple />
+            <span asp-validation-for="UnitSupImgs" class="text-danger"></span>
+
+            <!-- Preview Container -->
+            <div id="subImagesPreview" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
+        </div>
+        <!-- Description -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label text-light">Description</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <!-- Status -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Status</label>
+            <select asp-for="status" class="form-control"
+                    asp-items="Html.GetEnumSelectList<UnitStatus>()"></select>
+            <span asp-validation-for="@Model.status" class="text-danger"></span> 
+        </div>
+
+        <!-- Purpose -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Purpose</label>
+            <select asp-for="Purpose" class="form-control"
+                    asp-items="Html.GetEnumSelectList<UnitPurpose>()"></select>
+             <span asp-validation-for="Purpose" class="text-danger"></span> 
+        </div>
+
+        <!-- Type -->
+        <div class="col-md-4 mb-3">
+            <label class="form-label text-light">Type</label>
+            <select asp-for="type" class="form-control"
+                    asp-items="Html.GetEnumSelectList<UnitType>()"></select>
+            <span asp-validation-for="type" class="text-danger"></span> 
+        </div>
+
+        <!-- Property -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label text-light">Property</label>
+            
+            <select asp-for="propertyId" class="form-control">
+                <option>-- select property --</option>
+                @foreach(var item in Model.Property)
+                {
+                    if (item.IsAvailable == true)
+                    {
+                        <option value="@item.Id">@(item.City + "," + item.Location)</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="propertyId" class="text-danger"></span>
+        </div>
+       
+        <button type="submit" class="btn btn-primary" @(Model.Properties.Applicationuser.paid ? "" : "disabled")>
+            Submit
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .payment-box {
+        background: #1e1e2f;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+        border: 1px solid #2e2e40;
+    }
+
+        .payment-box label {
+            display: block;
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+    .payment-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        background: linear-gradient(45deg, #0d6efd, #198754);
+        color: white;
+        font-weight: bold;
+        transition: 0.3s ease;
+    }
+
+        .payment-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #198754, #0d6efd);
+        }
+    button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    button.active {
+        background: linear-gradient(45deg, #198754, #0d6efd);
+        color: white;
+        transform: scale(1.05);
+    }
+</style>
+
+<script>
+
+    // Main Image Preview
+    document.getElementById("mainImageInput").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("mainImagePreview");
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        }
+    });
+
+    // Sub Images Preview
+    document.getElementById("subImagesInput").addEventListener("change", function (event) {
+        const files = event.target.files;
+        const container = document.getElementById("subImagesPreview");
+
+        container.innerHTML = ""; // reset
+
+        for (let i = 0; i < files.length; i++) {
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(files[i]);
+            img.style.width = "100px";
+            img.style.height = "100px";
+            img.style.objectFit = "cover";
+            img.style.borderRadius = "8px";
+
+            container.appendChild(img);
+        }
+    });
+
+    let paymentDone = false;
+
+    // لما يبدأ الدفع (اختياري)
+    function startPayment() {
+        localStorage.setItem("paymentStatus", "pending");
+    }
+
+    // لما الدفع ينجح (هتستدعيها بعد الرجوع من صفحة الدفع)
+    function paymentSuccess() {
+        paymentDone = true;
+        localStorage.setItem("paymentStatus", "paid");
+
+        document.getElementById("submitBtn").disabled = false;
+        document.getElementById("submitBtn").classList.add("active");
+    }
+
+    // عند تحميل الصفحة
+    window.onload = function () {
+        if (localStorage.getItem("paymentStatus") === "paid") {
+            paymentSuccess();
+        }
+    };
+
+    // منع submit لو مفيش دفع
+    document.getElementById("submitBtn").addEventListener("click", function (e) {
+        if (!paymentDone) {
+            e.preventDefault();
+            alert("⚠️ You must complete payment first!");
+        }
+    });
+</script>

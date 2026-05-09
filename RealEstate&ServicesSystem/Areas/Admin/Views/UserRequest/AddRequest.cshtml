@@ -1,0 +1,68 @@
+﻿@using RealEstate_ServicesSystem.Viewmodel
+@model AddRequestVM
+@{
+    ViewData["Title"] = "AddRequset";
+}
+
+<h1 class="text-center">Add Requset</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="AddRequest" method="post">
+                <input type="hidden" asp-for="Listing.Id" />
+                <input type="hidden" asp-for="Listing.ApplicationUserId" />
+                <div class="form-group">
+                    <label asp-for="RequestType"></label>
+                    <select asp-for="RequestType" class="form-control"
+                            asp-items="Html.GetEnumSelectList<RequestType>()">
+                        >
+                    </select>
+                    <span asp-validation-for="RequestType" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Listing.Description">ListingDescription</label>
+                    <input asp-for="Listing.Description" class="form-control" />
+                    <span asp-validation-for="Listing.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Listing.Unit.Description">Unit.Description</label>
+                    <input asp-for="Listing.Unit.Description" class="form-control" />
+                    <span asp-validation-for="Listing.Unit.Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Listing.Unit.Property.City"></label>
+                    <input asp-for="Listing.Unit.Property.City" class="form-control" />
+                    <span asp-validation-for="Listing.Unit.Property.City" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Listing.Unit.Property.Location"></label>
+                    <input asp-for="Listing.Unit.Property.Location" class="form-control" />
+                    <span asp-validation-for="Listing.Unit.Property.Location" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Listing.Unit.Property.Address"></label>
+                    <input asp-for="Listing.Unit.Property.Address" class="form-control" />
+                    <span asp-validation-for="Listing.Unit.Property.Address" class="text-danger"></span>
+                </div>
+                
+                <div class=" form-group">
+                    <label asp-for="msg"></label>
+                    <textarea asp-for="msg" class="form-control"></textarea>
+                    <span asp-validation-for="msg" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

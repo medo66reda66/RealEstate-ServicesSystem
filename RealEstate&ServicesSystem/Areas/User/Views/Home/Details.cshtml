@@ -1,0 +1,382 @@
+﻿@using RealEstate_ServicesSystem.Utilities.DBinitializer
+
+@model Listing
+
+@section Scripts {
+
+    @if (TempData["success"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+
+            toastr.success('@TempData["success"]');
+
+        </script>
+    }
+    @if (@TempData["error"] != null)
+    {
+        <script>
+                  toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": true,
+                      "positionClass": "toast-top-center",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                                }
+            toastr.error('@TempData["error"]');
+        </script>
+    }
+}
+
+<div class="details-container">
+
+    <h2 class="page-title">👁 Unit Details</h2>
+
+    <!-- IMAGE SECTION -->
+    <div class="details-gallery">
+
+        <img id="mainImage" class="main-img"
+             src="~/UnitImages/@Model.Unit.ImageUrl" />
+
+        <div class="thumbs">
+            @foreach (var img in Model.Unit.UnitSupImgs)
+            {
+                <img class="thumb"
+                     src="~/UnitSupImages/@img.ImageUrl"
+                     onclick="changeImage(this)" />
+            }
+        </div>
+
+    </div>
+
+    <!-- INFO SECTION -->
+    <div class="details-info">
+
+        <p class="price">💰 @Model.Unit.Price EGP</p><br>
+        <h2>Unit Number: @Model.Unit.UnitNumber  @Model.listingType</h2>
+
+        <div class="grid">
+
+            <div><b>City:</b> @Model.Unit.Property.City</div>
+            <div><b>Location:</b> @Model.Unit.Property.Location</div>
+            <div><b>Area:</b> @Model.Unit.AreaSize m²</div>
+            <div><b>Bedrooms:</b> @Model.Unit.Bedrooms</div>
+            <div><b>Bathrooms:</b> @Model.Unit.Bathrooms</div>
+            <div><b>Floor:</b> @Model.Unit.FloorNumber</div>
+            <div><b>Purpose:</b> @Model.Unit.Purpose</div>
+            <div><b>Broker:</b> @Model.BrokerPercentage%</div><br />
+            <div class="role-box">
+                <b>Role:</b>
+                    <span class="role agent">🏢وكيل</span>
+                    @* <span><strong>Phone Number:</strong> @Model.ApplicationUser.PhoneNumber</span> *@
+            </div>
+        </div>
+
+        <div class="description">
+            <h4>Description</h4>
+            <p>@Model.Description</p>
+        </div>
+
+        <div class="action-buttons">
+            <div class="action-buttons">
+
+                <div class="top-buttons">
+                    <a href="/Admin/Review/AddReview/@Model.Id" class="btn add-review-btn">
+                        + Add Review
+                    </a>
+
+                    <a href="/Admin/Review/AllNotificationUserListing/@Model.Id" class="btn view-reviews-btn">
+                        👀 View Reviews
+                    </a>
+                </div>
+
+                <div class="bottom-button">
+                    <a href="/user/home/Index" class="btn back-btn">
+                        ⬅ Back
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<style>
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    /* الصف العلوي */
+    .top-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    /* زرار الباك تحت */
+    .bottom-button {
+        display: flex;
+    }
+
+    /* تحسين عام للأزرار */
+    .btn {
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    /* Back button styling */
+    .back-btn {
+        background: #f3f4f6;
+        color: #111;
+        border: 1px solid #d1d5db;
+    }
+
+        .back-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(37,99,235,0.4);
+        }
+    body {
+        background: linear-gradient(135deg, #0f172a, #020617);
+        font-family: system-ui;
+        color: white;
+    }
+
+    /* Title */
+    .page-title {
+        width: 100%;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #38bdf8;
+    }
+
+    /* Layout */
+    .details-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        padding: 40px;
+    }
+
+    /* Gallery */
+    .details-gallery {
+        flex: 1;
+        min-width: 350px;
+    }
+
+    /* Main Image */
+    .main-img {
+        width: 100%;
+        height: 420px;
+        border-radius: 20px;
+        object-fit: cover;
+        transition: 0.4s;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+    }
+
+    /* Thumbnails */
+    .thumbs {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .thumb {
+        width: 85px;
+        height: 85px;
+        border-radius: 12px;
+        cursor: pointer;
+        object-fit: cover;
+        opacity: 0.6;
+        transition: 0.3s;
+    }
+
+        .thumb:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+    /* Info */
+    .details-info {
+        flex: 1;
+        min-width: 350px;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(20px);
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    /* Price */
+    .price {
+        font-size: 24px;
+        color: #22c55e;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    /* Grid */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+        .grid div {
+            background: rgba(10,8,200,0.05);
+            padding: 10px;
+            border-radius: 10px;
+            transition: 0.3s;
+            color: white;
+        }
+
+            .grid div:hover {
+                background: rgba(255,255,255,0.1);
+            }
+
+    /* Description */
+    .description {
+        margin-top: 20px;
+        color: white;
+    }
+
+        .description h4 {
+            color: #facc15;
+
+        }
+
+    /* Button */
+    .back-btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 18px;
+        background: linear-gradient(45deg, #0d6efd, #3b82f6);
+        border-radius: 12px;
+        text-decoration: none;
+        color: midnightblue;
+        transition: 0.3s;
+    }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(13,110,253,0.5);
+        }
+    /* Role Box */
+    .role-box {
+        grid-column: span 2;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Base Role Style */
+    .role {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(10px);
+        transition: 0.3s;
+    }
+
+        /* Owner */
+        .role.owner {
+            background: rgba(34,197,94,0.15);
+            color: #22c55e;
+            box-shadow: 0 0 10px rgba(34,197,94,0.4);
+        }
+
+        /* Agent */
+        .role.agent {
+            background: rgba(59,130,246,0.15);
+            color: white;
+            box-shadow: 0 0 10px rgba(59,130,246,0.4);
+        }
+
+        /* User */
+        .role.user {
+            background: rgba(234,179,8,0.15);
+            color: #facc15;
+            box-shadow: 0 0 10px rgba(234,179,8,0.4);
+        }
+
+        /* Hover effect */
+        .role:hover {
+            transform: scale(1.1);
+        }
+</style>
+<script>
+        // تغيير الصورة
+       // تغيير الصورة بسلاسة
+    function changeImage(img) {
+        const main = document.getElementById("mainImage");
+
+        main.style.opacity = "0";
+
+        setTimeout(() => {
+            main.src = img.src;
+            main.style.opacity = "1";
+        }, 200);
+    }
+
+    // Zoom على الصورة
+    const mainImg = document.getElementById("mainImage");
+
+    mainImg.addEventListener("mousemove", (e) => {
+        const rect = mainImg.getBoundingClientRect();
+
+        const x = (e.clientX - rect.left) / rect.width * 100;
+        const y = (e.clientY - rect.top) / rect.height * 100;
+
+        mainImg.style.transformOrigin = `${x}% ${y}%`;
+        mainImg.style.transform = "scale(1.2)";
+    });
+
+    mainImg.addEventListener("mouseleave", () => {
+        mainImg.style.transform = "scale(1)";
+    });
+
+    // fade دخول الصفحة
+    window.addEventListener("load", () => {
+        document.querySelector(".details-container").style.opacity = "1";
+    });
+</script>

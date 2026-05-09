@@ -1,0 +1,138 @@
+﻿@using RealEstate_ServicesSystem.Utilities.DBinitializer
+@model IEnumerable<Applicationuser>
+
+
+<div>
+    <h2 class="text-white mb-4">👥 Users List</h2>
+
+ @section Scripts {
+    @if (TempData["success"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+
+            toastr.success('@TempData["success"]');
+
+        </script>
+    }
+
+    @if (@TempData["error"] != null)
+    {
+        <script>
+                  toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": true,
+                      "positionClass": "toast-top-center",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                                }
+            toastr.error('@TempData["error"]');
+        </script>
+    }
+ }
+ 
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    @if (User.IsInRole(DS.Role_Admin))
+                    {
+                        <td>
+                            @if (user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow)
+                            {
+                                <a href="/Admin/User/LockUnLock/@user.Id"
+                                   class="btn btn-success ">
+                                    Unblock
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="/Admin/User/LockUnLock/@user.Id"
+                                   class="btn btn-danger ">
+                                    Block
+                                </a>
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td><span class="text-muted">No actions available</span></td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    /* Custom Blue Button */
+    .btn-unblock {
+        background: linear-gradient(45deg, #0d6efd, #4dabf7);
+        border: none;
+        color: #fff;
+        transition: 0.3s ease;
+    }
+
+        .btn-unblock:hover {
+            background: linear-gradient(45deg, #0b5ed7, #339af0);
+            transform: scale(1.05);
+        }
+</style>
+<script>
+             document.addEventListener("DOMContentLoaded", function () {
+
+        document.querySelectorAll(".btn-danger, .btn-unblock").forEach(btn => {
+
+            btn.addEventListener("click", function () {
+
+                this.innerHTML = "Processing...";
+                this.style.opacity = "0.6";
+            });
+
+        });
+
+    });
+</script> 
+
+
+

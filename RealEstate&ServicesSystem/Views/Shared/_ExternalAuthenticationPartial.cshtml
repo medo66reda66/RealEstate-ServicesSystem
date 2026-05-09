@@ -1,0 +1,141 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<Applicationuser> SignInManager
+
+<div class="col-md-4 offset-2 social-login-box">
+
+    <section>
+
+        @{
+            var providers = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            if (!providers.Any())
+            {
+                <div class="no-provider">
+                    <p>
+                        No external login providers found.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <form asp-action="ExternalLogin"
+                      asp-route-returnurl="@ViewData["ReturnUrl"]"
+                      method="post"
+                      class="external-form">
+
+                    @foreach (var provider in providers)
+                    {
+                        <button type="submit"
+                                class="google-btn"
+                                name="provider"
+                                value="@provider.Name">
+
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
+                                 alt="Google" />
+
+                            Continue with @provider.Name
+
+                        </button>
+                    }
+
+                </form>
+            }
+        }
+
+    </section>
+
+</div>
+
+ <style>
+    /* =========================
+       SOCIAL LOGIN
+    ========================= */
+
+    .social-login-box {
+        margin-top: 20px;
+    }
+
+    /* form */
+
+    .external-form {
+        width: 100%;
+    }
+
+    /* =========================
+       GOOGLE BUTTON
+    ========================= */
+
+    .google-btn {
+        width: 200%;
+        height: 50px;
+        border: none;
+        border-radius: 16px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+        cursor: pointer;
+        transition: 0.3s ease;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+        /* hover */
+
+        .google-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            background: #f9fafb;
+        }
+
+        /* active */
+
+        .google-btn:active {
+            transform: scale(.98);
+        }
+
+        /* icon */
+
+        .google-btn img {
+            width: 22px;
+            height: 22px;
+        }
+
+    /* =========================
+       NO PROVIDER
+    ========================= */
+
+    .no-provider {
+        background: #fff;
+        padding: 18px;
+        border-radius: 14px;
+        text-align: center;
+        color: #6b7280;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    (max - width:768px) {
+        .google-btn
+
+    {
+        height: 50px;
+        font-size: 14px;
+        border-radius: 14px;
+    }
+
+    .google-btn img {
+        width: 20px;
+        height: 20px;
+    }
+
+    }
+</style>

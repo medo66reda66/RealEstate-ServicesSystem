@@ -1,0 +1,195 @@
+﻿@model RealEstate_ServicesSystem.Viewmodel.LoginVM
+
+<div class="page">
+    <div class="card">
+
+        <h2>Welcome Back</h2>
+
+        <form asp-action="Login" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="error"></div>
+
+            <div class="input-box">
+                <input asp-for="Email" required />
+                <label>Email</label>
+                <span asp-validation-for="Email"></span>
+            </div>
+
+            <div class="input-box password-box">
+                <input asp-for="Password" type="password" id="password" required />
+                <label>Password</label>
+                <i class="toggle" onclick="togglePassword()">👁️</i>
+                <span asp-validation-for="Password"></span>
+            </div>
+
+            <div class="remember">
+                <label>
+                    <input type="checkbox" asp-for="RememberMe" />
+                    Remember Me
+                </label>
+            </div>
+
+            <button type="submit">Login</button>
+
+        </form>
+        <partial name="_ExternalAuthenticationPartial" />
+
+        <a href="/Identity/Account/Register" class="login-link">
+            Don't have an account? Register
+        </a>
+
+        <a href="/Identity/Account/ResentConfirmEmail" class="login-link">Resend Confirmation Email</a>
+        <a href="/Identity/Account/ForgotPassword" class="login-link">Forgot Password?</a>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #141e30, #243b55);
+    }
+
+    /* Center */
+    .page {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Card */
+    .card {
+        width: 360px;
+        padding: 40px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 15px;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        animation: fadeIn 0.8s ease;
+    }
+
+     fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .card h2 {
+        text-align: center;
+        color: #fff;
+        margin-bottom: 25px;
+    }
+
+    /* Inputs */
+    .input-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            outline: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .input-box label {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            color: #ccc;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        /* Floating label */
+        .input-box input:focus + label,
+        .input-box input:valid + label {
+            top: -8px;
+            left: 8px;
+            font-size: 12px;
+            background: #243b55;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+    /* Password icon */
+    .password-box .toggle {
+        position: absolute;
+        right: 10px;
+        top: 12px;
+        cursor: pointer;
+    }
+
+    /* Remember me */
+    .remember {
+        color: #ddd;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    /* Button */
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #00c6ff;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        button:hover {
+            background: #0072ff;
+        }
+
+    /* Link */
+    .login-link {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #ccc;
+        text-decoration: none;
+    }
+
+        .login-link:hover {
+            color: white;
+        }
+
+    /* Errors */
+    span {
+        color: #ff6b6b;
+        font-size: 12px;
+    }
+
+    .error {
+        color: #ff6b6b;
+        margin-bottom: 10px;
+    }
+</style>
+<script>
+    function togglePassword() {
+        var input = document.getElementById("password");
+        input.type = input.type === "password" ? "text" : "password";
+    }
+</script>

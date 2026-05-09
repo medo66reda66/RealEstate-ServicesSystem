@@ -1,0 +1,134 @@
+@using RealEstate_ServicesSystem.Models
+@model IEnumerable<Listing>
+
+@section Scripts {
+
+    @if (TempData["success"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+
+            toastr.success('@TempData["success"]');
+
+        </script>
+    }
+    @if(@TempData["error"] != null)
+    {
+        <script>
+                  toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": true,
+                      "positionClass": "toast-top-center",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                                }
+            toastr.error('@TempData["error"]');
+        </script>
+    }
+}
+
+<div class="container py-5">
+    <h2 class="section-title mb-4 text-dark-emphasis">📋 My Listings</h2>
+
+    <div class="mb-4 text-center">
+        <a href="/User/Home/CreateListing" class="btn btn-outline-primary fw-bold" style="border-radius: 30px; padding: 10px 25px;">
+            ⬅ Back to All Units
+        </a>
+    </div>
+
+    <div class="grid">
+        @if(Model != null && Model.Any())
+        {
+            foreach (var listing in Model)
+            {
+                <div class="card shadow-lg">
+                    <div class="image-box">
+                        <img src="~/UnitImages/@(listing.Unit?.ImageUrl)" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'"/>
+                        <span class="price">@listing.Unit?.Price EGP</span>
+                    </div>
+                    <div class="content d-flex flex-column" style="flex: 1;">
+                        <h4 class="mb-2 text-primary" style="font-weight: 700;">Unit @listing.Unit?.UnitNumber</h4>
+                        
+                        <div class="property-details mb-3" style="font-size: 13px; background: rgba(13, 110, 253, 0.05); padding: 12px; border-radius: 8px; border-left: 4px solid #0d6efd;">
+                            <div style="margin-bottom: 5px;"><strong>🏙 City:</strong> @listing.Unit?.Property?.City</div>
+                            <div style="margin-bottom: 5px;"><strong>📍 Location:</strong> @listing.Unit?.Property?.Location</div>
+                            <div><strong>🏠 Address:</strong> @listing.Unit?.Property?.Address</div>
+                        </div>
+
+                        <p class="text-muted mb-2" style="font-size: 14px;">🏷 Purpose: @listing.Unit?.Purpose | Status: @(listing.IsActive ? "🟢 Active" : "🔴 Inactive")</p>
+
+                        <div class="info">
+                            <span>🗓 Period: @listing.Rentperiod</span>
+                            <span>💰 Comm: @listing.BrokerPercentage%</span>
+                        </div>
+
+                        <div class="action-buttons mt-auto">
+                            <a href="/Admin/Listing/Edit/@listing.Id" class="btn" style="background: #0d6efd; color: white;">✏️ Edit</a>
+                            <a href="/Admin/Listing/Delete/@listing.Id" onclick="confirmDeleteListing(event, @listing.Id)" class="btn" style="background: #dc3545; color: white;">🗑 Delete</a>
+                        </div>
+                        
+                        <button class="btn mt-2 w-100 text-white" style="background: #6c757d;" onclick="toggleDetails(this)">More Info 🔽</button>
+                        
+                        <div class="details" style="display:none; font-size: 13px; margin-top:10px;">
+                            <p><strong>Description:</strong> @listing.Description</p>
+                            <p><strong>Created At:</strong> @listing.createAt.ToShortDateString()</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="grid-column: span 3; text-align: center; margin-top: 50px;">
+                <h4 class="text-muted">No listings found.</h4>
+                <p class="text-muted">Go to "All Units" to create a new listing.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function toggleDetails(btn) {
+        const box = btn.nextElementSibling;
+        if (box.style.display === "block" || box.style.display === "") {
+            box.style.display = "none";
+            btn.innerHTML = "More Info 🔽";
+        } else {
+            box.style.display = "block";
+            btn.innerHTML = "Less Info 🔼";
+        }
+    }
+
+    function confirmDeleteListing(e, id) {
+        e.preventDefault();
+        if (confirm("Delete this listing?")) {
+            window.location.href = "/Admin/Listing/Delete/" + id;
+        }
+    }
+</script>

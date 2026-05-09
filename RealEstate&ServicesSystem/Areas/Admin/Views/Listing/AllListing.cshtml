@@ -1,0 +1,501 @@
+@using RealEstate_ServicesSystem.Utilities.DBinitializer
+@model IEnumerable<Listing>
+
+@section Scripts {
+
+    @if (TempData["success"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+
+            toastr.success('@TempData["success"]');
+
+        </script>
+    }
+    @if (@TempData["error"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                            }
+        toastr.error('@TempData["error"]');
+        </script>
+    }
+}
+
+
+@if (User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee))
+{
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-white">🏠 Listings</h3>
+    <a href="/Admin/Listing/Add" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Listing
+    </a>
+</div>
+
+<!-- 🔳 Filter Card -->
+<div class="filter-card">
+
+    <button class="filter-toggle" onclick="toggleFilter()">
+        🔍 Filter Listings
+    </button>
+
+    <form method="get" class="filter-form" id="filterForm">
+
+        <div class="filter-grid">
+
+            <!-- Unit -->
+            <select name="UnitNumber">
+                <option value="">Unit</option>
+                @foreach (var u in Model)
+                {
+                    @if(u.Unit.UnitNumber == ViewBag.UnitNumber)
+                    {
+                        <option value="@u.Unit.UnitNumber" selected>
+                            @u.Unit.UnitNumber
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@u.Unit.UnitNumber">
+                            @u.Unit.UnitNumber
+                        </option>
+                    }
+                }
+            </select>
+
+            <!-- City -->
+            <input type="text" name="City"
+                   placeholder="City"
+                   value="@ViewBag.City" />
+
+            <!-- Status -->
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="IsActive" value="true">
+                <label class="form-check-label">
+                    Active
+                </label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="apply-btn">Apply Filter</button>
+
+        </div>
+
+    </form>
+</div>
+
+<div class="table-responsive">
+<table class="table table-dark table-hover align-middle rounded overflow-hidden">
+    <thead class="table-secondary text-dark" >
+        <tr>
+            <th>UnitID</th>
+            <th>Listing Type</th>
+            <th>Price</th>
+            <th>Percentage</th>
+            <th>City</th>
+            <th>Location</th>
+            <th>Rentperiod</th>
+            <th>AreaSize</th>
+            <th>purpus</th>
+            <th>IsActive</th>
+            <th>CreateAt</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var listing in Model)
+        {
+            <tr>
+                <td>@listing.Unit.UnitNumber</td>
+                <td>@listing.Unit.type</td>
+                <td>@listing.Unit.Price.ToString("C")</td>
+                <td>@listing.BrokerPercentage</td>
+                <td>@listing.Unit.Property.City</td>
+                <td>@listing.Unit.Property.Location</td>
+                <td>@listing.Rentperiod</td>
+                <td>@listing.Unit.AreaSize</td>
+                <td>@listing.Unit.Purpose</td>
+                    @if (listing.IsActive)
+                    {
+                        <td><span class="status-badge active">Active</span></td>
+                    }
+                    else
+                    {
+                        <td><span class="status-badge inactive">Inactive</span></td>
+                    }
+                <td>@listing.createAt.ToString("g")</td>
+                    <td class="text-center">
+                        <a href="/Admin/Listing/Details/@listing.Id" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        <a href="/Admin/Listing/Edit/@listing.Id" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <form asp-action="Delete" asp-route-id="@listing.Id" method="post"
+                              style="display:inline;"
+                              onsubmit="return confirm('هل أنت متأكد من حذف الوحدة؟');">
+
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+            </tr>
+        }
+    </tbody>
+    </table>
+    </div>
+
+    <div class="pagination">
+
+        <!-- Prev -->
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a class="page-btn"
+               href="?page=@(ViewBag.CurrentPage - 1)&UnitId=@ViewBag.UnitId&City=@ViewBag.City&IsActive=@ViewBag.IsActive">
+                «
+            </a>
+        }
+
+        <!-- Numbers -->
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a class="page-btn @(i == ViewBag.CurrentPage ? "active" : "")"
+               href="?page=@i&UnitId=@ViewBag.UnitId&City=@ViewBag.City&IsActive=@ViewBag.IsActive">
+                @i
+            </a>
+        }
+
+        <!-- Next -->
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a class="page-btn"
+               href="?page=@(ViewBag.CurrentPage + 1)&UnitId=@ViewBag.UnitId&City=@ViewBag.City&IsActive=@ViewBag.IsActive">
+                »
+            </a>
+        }
+
+    </div>
+    } else
+    {
+        <p class="success-message">✔ The operation successfully</p>
+
+        <style>
+            .success-message {
+                background: rgba(34, 197, 94, 0.15);
+                color: #22c55e;
+                padding: 12px 18px;
+                border-radius: 10px;
+                border: 1px solid rgba(34, 197, 94, 0.4);
+                font-weight: 500;
+                width: fit-content;
+                margin: 10px auto;
+                animation: fadeIn 0.4s ease;
+            }
+        </style>
+
+        <script>
+                    setTimeout(() =>
+                    {
+                        const msg = document.querySelector(".success-message");
+                        if (msg)
+                        {
+                            msg.style.transition = "0.5s";
+                            msg.style.opacity = "0";
+                            setTimeout(() => msg.remove(), 500);
+                        }
+                    }, 3000);
+        </script>
+    }
+
+@if (TempData["Success"] != null)
+{
+        <div id="toast" class="toast show-toast">
+            <span>@TempData["Success"]</span>
+            <button onclick="closeToast()">✖</button>
+        </div>
+}
+
+<style>
+    /* 🔳 Filter Card */
+    .filter-card {
+        background: #1e1e2f;
+        padding: 15px;
+        border-radius: 12px;
+        color: white;
+        width: 100%;
+        max-width: 900px;
+        margin: 20px auto;
+    }
+
+    /* 🔘 Toggle */
+    .filter-toggle {
+        width: 100%;
+        padding: 12px;
+        background: #28a745;
+        border: none;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    /* 📋 Form */
+    .filter-form {
+        margin-top: 15px;
+        display: none;
+    }
+
+    /* 🔲 Grid */
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+        .filter-grid input,
+        .filter-grid select {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #2b2b3d;
+            color: white;
+        }
+
+    /* 🔵 Button */
+    .apply-btn {
+        grid-column: span 3;
+        padding: 10px;
+        background: #007bff;
+        border: none;
+        border-radius: 8px;
+        color: white;
+    }
+
+    /* 🔳 Wrapper */
+    .table-responsive {
+        background: #1e1e2f;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    /* 📊 Table */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #fff;
+        overflow: hidden;
+    }
+
+        /* 🔝 Header */
+        .custom-table thead {
+            background: linear-gradient(90deg, #f8f9fa, #e9ecef);
+            color: #000;
+        }
+
+            .custom-table thead th {
+                padding: 12px;
+                font-weight: bold;
+                text-align: center;
+                border-bottom: 2px solid #ddd;
+            }
+
+        /* 📦 Rows */
+        .custom-table tbody tr {
+            background: #2b2b3d;
+            transition: all 0.25s ease;
+        }
+
+            .custom-table tbody tr:hover {
+                background: #3a3a55;
+                transform: scale(1.01);
+            }
+
+        /* 📄 Cells */
+        .custom-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #444;
+        }
+
+        /* 🎯 Buttons */
+        .custom-table .btn {
+            border-radius: 6px;
+            margin: 2px;
+            transition: 0.2s;
+        }
+
+            .custom-table .btn:hover {
+                transform: scale(1.05);
+            }
+
+    /* 🟢 Status Badge */
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+        .status-badge.active {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-badge.inactive {
+            background: #dc3545;
+            color: white;
+        }
+
+    /* 📱 Responsive */
+    @@media (max-width: 768px) {
+        .custom-table th, .custom-table td
+
+    {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        /* 🔘 Button */
+        .page-btn {
+            padding: 10px 16px;
+            background: #1e1e2f;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: 0.3s;
+            border: 1px solid #333;
+            font-weight: 500;
+        }
+
+            /* 🔥 Hover */
+            .page-btn:hover {
+                background: #28a745;
+                transform: translateY(-3px);
+            }
+
+            /* 🔵 Active */
+            .page-btn.active {
+                background: #007bff;
+                font-weight: bold;
+                pointer-events: none;
+            }
+
+        /* 📱 Responsive */
+        @@media (max-width: 600px) {
+            .page-btn
+
+        {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            min-width: 280px;
+            max-width: 350px;
+            background: linear-gradient(45deg,#22c55e,#16a34a);
+            color: white;
+            padding: 16px 18px;
+            border-radius: 14px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateX(120%);
+            transition: all 0.5s ease;
+        }
+
+            .toast button {
+                background: transparent;
+                border: none;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+        /* يظهر */
+        .show-toast {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* يختفي */
+        .hide-toast {
+            opacity: 0;
+            transform: translateX(120%);
+        }
+</style>
+    <script>
+        function toggleFilter() {
+            let form = document.getElementById("filterForm");
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        }
+                window.onload = function () {
+            const toast = document.getElementById("toast");
+
+            if (toast) {
+                setTimeout(() => {
+                    toast.classList.remove("show-toast");
+                    toast.classList.add("hide-toast");
+                }, 3000);
+            }
+        }
+
+        function closeToast() {
+            const toast = document.getElementById("toast");
+            toast.classList.remove("show-toast");
+            toast.classList.add("hide-toast");
+        }
+    </script>
