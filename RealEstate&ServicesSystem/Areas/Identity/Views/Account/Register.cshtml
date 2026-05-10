@@ -236,6 +236,146 @@
         padding: 2px 6px;
         border-radius: 4px;
     }
+    @@model (max-width: 768px) {
+        /* Center page */
+        .page
+
+    {
+        padding: 20px;
+    }
+
+    /* Card */
+    .card {
+        width: 100%;
+        max-width: 400px;
+        padding: 25px;
+        border-radius: 12px;
+    }
+
+        /* Title */
+        .card h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+    /* Inputs */
+    .input-box input,
+    .select-box select {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .input-box label {
+        font-size: 13px;
+    }
+
+    /* Select arrow */
+    .select-box::after {
+        top: 12px;
+        font-size: 11px;
+    }
+
+    /* Password toggle */
+    .toggle {
+        top: 10px;
+        font-size: 14px;
+    }
+
+    /* Button */
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Links */
+    .login-link {
+        font-size: 13px;
+    }
+
+    }
+    /* =========================
+   RESPONSIVE (LOGIN / REGISTER)
+========================= */
+
+@@media (max-width: 768px) {
+
+    /* Center page */
+    .page {
+        padding: 20px;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* Card */
+    .card {
+        width: 100%;
+        max-width: 400px;
+        padding: 25px;
+        border-radius: 12px;
+    }
+
+    /* Title */
+    .card h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    /* Inputs + Select */
+    .input-box input,
+    .select-box select {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Labels */
+    .input-box label {
+        font-size: 13px;
+    }
+
+    /* Select arrow */
+    .select-box::after {
+        top: 12px;
+        font-size: 11px;
+    }
+
+    /* Password toggle */
+    .toggle {
+        top: 10px;
+        font-size: 14px;
+    }
+
+    /* Button */
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Links */
+    .login-link {
+        font-size: 13px;
+    }
+
+    /* errors */
+    span {
+        font-size: 11px;
+    }
+}
+
+/* Small phones */
+@@media (max-width: 480px) {
+
+    .card {
+        padding: 20px;
+    }
+
+    .card h2 {
+        font-size: 20px;
+    }
+
+    button {
+        font-size: 13px;
+    }
+}
 </style>
 
 <script>

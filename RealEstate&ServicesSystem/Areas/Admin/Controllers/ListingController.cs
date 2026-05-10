@@ -38,6 +38,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Employee},{DS.Role_Owner},{DS.Role_Agent}")]
         public async Task<IActionResult> AllListing(FilterListingVM filterListingVM,CancellationToken cancellationToken, int page = 1)
         {
+
             var listingas = await _listingRepository.GetAllAsync(includes:[ l => l.Unit,p=>p.Unit.Property], cancellationToken: cancellationToken,tracking: false);
             if (filterListingVM.UnitNumber is not null)
             {
@@ -81,6 +82,19 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         public async Task<IActionResult> Add(int id,CancellationToken cancellationToken)
         {
             var user = await _userManager.GetUserAsync(User);
+            var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+            var ListingFromDb = await _listingRepository.GetAllAsync(
+                e => e.ApplicationUser.Id == user.Id &&
+                     e.createAt >= startOfMonth,
+                cancellationToken: cancellationToken,
+                tracking: false
+            );
+            if (ListingFromDb.Count() >= 15)
+            {
+                TempData["error"] = "You have reached the maximum limit of 15 listings per month.Please wait until next month or delete an existing listing.";
+                return RedirectToAction("MyListings", "Home", new { area = "User" });
+            }
             var VM = new AddListingmodel
             {
                 Units = await _unitRepository.GetoneAsync(e => e.Id == id, includes: [e => e.Property], cancellationToken: cancellationToken, tracking: false),
@@ -92,13 +106,16 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Agent},{DS.Role_Employee}")]
         public async Task<IActionResult> Add(AddListingmodel addListingmodel,CancellationToken cancellationToken)
         {
+            var user = await _userManager.GetUserAsync(User);
+
+           
             using var transaction = await _context.Database.BeginTransactionAsync();
             if (!ModelState.IsValid)
             {
                 TempData["error"] = "Please correct the errors in the form.";
                 return View(addListingmodel);
             }
-            var user =await _userManager.GetUserAsync(User);
+          
             try
             {
                 var listing = new Listing()

@@ -123,7 +123,7 @@
        MOBILE
     ========================= */
 
-    (max - width:768px) {
+    @@Model(max - width:768px) {
         .google-btn
 
     {
@@ -138,4 +138,57 @@
     }
 
     }
+    /* =========================
+   RESPONSIVE
+========================= */
+
+@@media (max-width: 768px) {
+
+    .social-login-box {
+        margin-top: 15px;
+    }
+
+    .external-form {
+        width: 100%;
+    }
+
+    .google-btn {
+        width: 100%;
+        height: 48px;
+        font-size: 14px;
+        border-radius: 14px;
+        gap: 10px;
+        padding: 0 15px;
+    }
+
+    .google-btn img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .no-provider {
+        padding: 15px;
+        font-size: 14px;
+    }
+}
+
+/* Small phones */
+
+@@media (max-width: 480px) {
+
+    .google-btn {
+        height: 45px;
+        font-size: 13px;
+        border-radius: 12px;
+    }
+
+    .google-btn img {
+        width: 18px;
+        height: 18px;
+    }
+
+    .no-provider {
+        font-size: 13px;
+    }
+}
 </style>

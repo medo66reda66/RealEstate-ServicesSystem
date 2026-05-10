@@ -1,0 +1,119 @@
+﻿
+ @model List<Favorite>
+
+ <br />
+ <br />
+ <br />
+ <br />
+ <br />
+<h2 class="page-title">My Favorites ❤️</h2>
+<br />
+@if (!Model.Any())
+{
+    <h1>--No favorites yet.--</h1>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+}
+else
+{
+    <div class="grid">
+
+        @foreach (var fav in Model)
+        {
+            <div class="card">
+
+                <div class="image-box">
+                    <img src="~/UnitImages/@fav.Listing.Unit.ImageUrl" />
+
+                    <span class="price">
+                        @fav.Listing.Unit.Price EGP
+                    </span>
+
+                    <button class="fav remove-fav"
+                            onclick="removeFav(@fav.Id, this)">
+                        ❤️
+                    </button>
+                </div>
+
+                <div class="content">
+
+                    <h4>@fav.Listing.Unit.UnitNumber</h4>
+
+                    <p>
+                        📍 @fav.Listing.Unit.Property.City -
+                        @fav.Listing.Unit.Property.Location
+                    </p>
+
+                    <div class="info">
+                        <span>🛏 @fav.Listing.Unit.Bedrooms</span>
+                        <span>📐 @fav.Listing.Unit.AreaSize m²</span>
+                    </div>
+
+                    <a href="/User/Home/Details/@fav.Listing.Id"
+                       class="btn btn-primary">
+                        Details 👁
+                    </a>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+    <br />
+}
+<style>
+    .fav {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 0, 0, 0.08);
+        color: red;
+        font-size: 18px;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.25);
+        transition: 0.3s;
+    }
+
+        /* لما تدوس أو hover */
+        .fav:hover {
+            transform: scale(1.15);
+            background: rgba(255, 0, 0, 0.18);
+            box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
+        }
+
+        /* الحالة النشطة (لو عايزه ممتلئ) */
+        .fav.active {
+            background: red;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+        }
+</style>
+<script>
+    function removeFav(favId, btn) {
+
+        fetch(`/User/Home/RemoveFavorites/${favId}`, {
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.success) {
+                // يشيل الكارت من الصفحة
+                btn.closest('.card').remove();
+            }
+
+        });
+
+    }
+</script>

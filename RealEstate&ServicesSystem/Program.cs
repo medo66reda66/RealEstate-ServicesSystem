@@ -69,6 +69,7 @@ namespace RealEstate_ServicesSystem
             builder.Services.AddScoped<IRepository<Userrequest>, Repository<Userrequest>>();
             builder.Services.AddScoped<IRepository<Notification>, Repository<Notification>>();
             builder.Services.AddScoped<IRepository<UserReview>, Repository<UserReview>>();
+            builder.Services.AddScoped<IRepository<Favorite>, Repository<Favorite>>();
             builder.Services.AddScoped<ISupImgRepository, SupImgRepository>();
             builder.Services.AddScoped<IDBintializer, DBintializer>();
 

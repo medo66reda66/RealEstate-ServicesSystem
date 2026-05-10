@@ -22,10 +22,11 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
         private readonly IRepository<Unit> unitRepository;
         private readonly IRepository<Property> propertyRepository;
         private readonly IRepository<Notification> notificationRepository;
+        private readonly IRepository<Favorite> favoriteRepository;
         private readonly UserManager<Applicationuser> userManager;
 
 
-        public HomeController(IRepository<Listing> listingRepository, IRepository<Unit> unitRepository, ILogger<HomeController> logger, UserManager<Applicationuser> userManager, IRepository<Property> propertyRepository, IRepository<Notification> notificationRepository)
+        public HomeController(IRepository<Listing> listingRepository, IRepository<Unit> unitRepository, ILogger<HomeController> logger, UserManager<Applicationuser> userManager, IRepository<Property> propertyRepository, IRepository<Notification> notificationRepository, IRepository<Favorite> favoriteRepository)
         {
             this.listingRepository = listingRepository;
             this.unitRepository = unitRepository;
@@ -33,36 +34,72 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
             this.userManager = userManager;
             this.propertyRepository = propertyRepository;
             this.notificationRepository = notificationRepository;
+            this.favoriteRepository = favoriteRepository;
+        }
+        public async Task<IActionResult> Favorites()
+        {
+            var user = await userManager.GetUserAsync(User);
+            var favorites = await favoriteRepository.GetAllAsync(f => f.ApplicationUserId == user.Id, includes: [f => f.Listing, f => f.Listing.Unit, f => f.Listing.Unit.Property], cancellationToken: CancellationToken.None, tracking: false);
+            return View(favorites);
+        }
+        [HttpPost]
+        public async Task<IActionResult> RemoveFavorites(int id,CancellationToken cancellationToken)
+        {
+            var fav = await favoriteRepository.GetoneAsync(f => f.Id == id, cancellationToken: cancellationToken);
+
+            if (fav != null)
+            {
+                favoriteRepository.Delete(fav);
+                await favoriteRepository.SaveChangesAsync(cancellationToken);
+            }
+
+            return Json(new { success = true });
+        }
+        [HttpPost]
+        public async Task<IActionResult> ToggleFavorite(int id,CancellationToken cancellationToken)
+        {
+            var user = await userManager.GetUserAsync(User);
+
+            var fav = await favoriteRepository.GetAllAsync(x => x.ListingId == id && x.ApplicationUserId == user.Id,cancellationToken:cancellationToken);
+            var favorite = fav.FirstOrDefault();
+
+            if (favorite == null)
+            {
+                await favoriteRepository.AddAsync(new Favorite
+                {
+                    ListingId = id,
+                    ApplicationUserId = user.Id
+                }, cancellationToken);
+                await favoriteRepository.SaveChangesAsync(cancellationToken);
+
+
+                return Json(new { isFavorite = true });
+            }
+            else
+            {
+                 favoriteRepository.Delete(favorite);
+                await favoriteRepository.SaveChangesAsync(cancellationToken);
+
+                return Json(new { isFavorite = false });
+            }
         }
         public async Task<IActionResult> GetNotifications(NotificatinVM notificatinVM,CancellationToken cancellationToken)
         {
-            var userId = userManager.GetUserId(User);
-
-            //var notifications = (await notificationRepository.
-            //    GetAllAsync(n => n.UserId == userId, includes: [n=>n.FromUser], cancellationToken: cancellationToken, tracking: false))
-            //    .OrderByDescending(n => n.CreatedAt)
-            //    .Take(10)
-            //    .ToList();
-            //var notifications = (await notificationRepository.
-            //    GetAllAsync(n => n.UserId == userId, includes: [n=>n.FromUser], cancellationToken: cancellationToken, tracking: false))
-            //    .OrderByDescending(n => n.CreatedAt)
-            //    .Take(10)
-            //    .ToList();
-
-            //var unreadCount = notifications.Count(n => !n.IsRead);
-            //ViewBag.NotifCount = unreadCount;
+            var user = await userManager.GetUserAsync(User);
 
             var Not = new NotificatinVM()
             {
-                NotificationListing = (List<Notification>)(await notificationRepository.GetAllAsync(n => n.UserId == userId, includes: [n => n.FromUser], cancellationToken: cancellationToken, tracking: false))
+                NotificationListing = (List<Notification>)(await notificationRepository.GetAllAsync(n => n.UserId == user.Id, includes: [n => n.FromUser], cancellationToken: cancellationToken, tracking: false))
                 .OrderByDescending(n => n.CreatedAt)
                 .Take(10)
                 .ToList(), 
                 
-                NotificationOwner = (List<Notification>)(await notificationRepository.GetAllAsync(n => n.UserId == userId, includes: [n => n.FromUser], cancellationToken: cancellationToken, tracking: false))
+                NotificationOwner = (List<Notification>)(await notificationRepository.GetAllAsync(n => n.UserId == user.Id, includes: [n => n.FromUser], cancellationToken: cancellationToken, tracking: false))
                 .OrderByDescending(n => n.CreatedAt)
                 .Take(10)
-                .ToList()
+                .ToList(),
+
+                 Applicationuser = user
             };
             ViewBag.NotifCount = Not.NotificationListing.Count(n => !n.IsRead);
             ViewBag.NotifCountOwner = Not.NotificationOwner.Count(n => !n.IsRead);
@@ -71,11 +108,9 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
         }
         public async Task<IActionResult> Index(FilterHome filterHome, CancellationToken cancellationToken, int page = 1)
         {
-            var listing = ((List<Listing>)await listingRepository.GetAllAsync(e=>e.Unit.status == UnitStatus.Available ,includes: [l => l.Unit, l => l.Unit.Property], cancellationToken: cancellationToken, tracking: false))
-                .OrderByDescending(e=>e.createAt)
-                .Where(e=>e.IsActive==true)
-                .ToList()
-                ;
+            var sixMonthsAgo = DateTime.Now.AddMonths(-9);
+            var listing = ((List<Listing>)await listingRepository.GetAllAsync(e => e.Unit.status == UnitStatus.Available && e.IsActive && e.createAt >= sixMonthsAgo, includes: [l => l.Unit, l => l.Unit.Property], cancellationToken: cancellationToken, tracking: false))
+                .OrderByDescending(e => e.createAt).ToList();
 
             if (filterHome.city != null)
             {
@@ -155,9 +190,9 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
             var unitsproperty = new ViewOwnerVM
             {
                 Property = (List<Property>)await propertyRepository.GetAllAsync(e=>e.ApplicationuserId == user!.Id,
-                    cancellationToken: cancellationToken),
+                    cancellationToken: cancellationToken,tracking: false),
                 Unit = (List<Unit>)await unitRepository.GetAllAsync(e=>e.Property.ApplicationuserId == user!.Id, includes:[equals=>equals.UnitSupImgs],
-                    cancellationToken: cancellationToken)
+                    cancellationToken: cancellationToken,tracking: false)
             };
             return View(unitsproperty);
         }
@@ -234,7 +269,7 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
             var myListings = await listingRepository.GetAllAsync(
                 e => e.ApplicationUserId == user!.Id, 
                 includes: [d => d.Unit, c => c.Unit.Property, s => s.Unit.UnitSupImgs], 
-                cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken, tracking: false);
             return View(myListings);
         }
 

@@ -40,6 +40,21 @@
                     </li>
                 }
 
+                @if(User.IsInRole($"{DS.Role_Agent}"))
+                {
+                    <li>
+                        <a href="/User/Home/MyListings" class="nav-link">
+                            📋 My Listings
+                        </a>
+                    </li>
+                }
+                @if (User.IsInRole($"{DS.Role_User}"))
+                {
+                    <a href="/User/Home/Favorites" class="nav-link">
+                        ❤️ Favorites
+                    </a>
+                }
+
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     <li class="nav-item welcome">
@@ -521,19 +536,13 @@
         position: relative;
     }
 
-        .hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-        }
 
     .hero-overlay {
         position: relative;
         color: white;
         text-align: center;
         max-width: 700px;
-    }
+    } */
 
     .hero h1 {
         font-size: 55px;
@@ -546,7 +555,7 @@
         opacity: 0.9;
     }
 
-    /* SEARCH */
+    /* SEARCH
     .search-box {
         margin-top: 20px;
         display: flex;
@@ -868,6 +877,126 @@
     }
 
     }
+   /* =========================
+   RESPONSIVE IMPROVEMENTS
+========================= */
+
+/* Tablets */
+@@media (max-width: 992px) {
+
+    .hero h1 {
+        font-size: 42px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-box button {
+        width: 100%;
+    }
+
+    .card {
+        flex: 0 0 48%;
+    }
+}
+
+/* Mobile */
+@@media (max-width: 768px) {
+
+    /* NAVBAR */
+    .nav-menu {
+        flex-direction: column;
+        align-items: stretch;
+        background: white;
+        position: absolute;
+        top: 65px;
+        right: 10px;
+        width: 220px;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        display: none;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    /* HERO */
+    .hero {
+        height: 60vh;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    /* SEARCH */
+    .search-box {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .search-box input,
+    .search-box button {
+        width: 100%;
+    }
+
+    /* CARDS */
+    .card {
+        flex: 0 0 100%;
+    }
+
+    /* FOOTER */
+    .footer-container {
+        text-align: center;
+    }
+
+    .socials {
+        justify-content: center;
+    }
+}
+
+/* Small phones */
+@@media (max-width: 576px) {
+
+    .hero h1 {
+        font-size: 26px;
+    }
+
+    .hero p {
+        font-size: 13px;
+    }
+
+    .navbar {
+        width: 95%;
+        padding: 8px 12px;
+    }
+
+    .notification-bell {
+        width: 34px;
+        height: 34px;
+    }
+
+    .card {
+        flex: 0 0 100%;
+    }
+}
 </style>
 
 <script>

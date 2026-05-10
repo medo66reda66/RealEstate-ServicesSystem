@@ -348,6 +348,25 @@
         .role:hover {
             transform: scale(1.1);
         }
+        @@media (max-width: 992px) {
+
+    .details-container {
+        padding: 25px;
+        gap: 20px;
+    }
+
+    .main-img {
+        height: 350px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-box {
+        grid-column: span 1;
+    }
+}
 </style>
 <script>
         // تغيير الصورة

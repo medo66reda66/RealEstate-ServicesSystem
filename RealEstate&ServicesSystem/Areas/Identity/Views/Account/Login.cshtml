@@ -186,6 +186,137 @@
         color: #ff6b6b;
         margin-bottom: 10px;
     }
+
+ @@model(max-width: 768px) {
+
+    /* Center container */
+    .page {
+        padding: 20px;
+    }
+
+    /* Card */
+    .card {
+        width: 100%;
+        max-width: 380px;
+        padding: 25px;
+        border-radius: 12px;
+    }
+
+    /* Title */
+    .card h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    /* Inputs */
+    .input-box input {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .input-box label {
+        font-size: 13px;
+    }
+
+    /* Password icon */
+    .password-box .toggle {
+        top: 10px;
+        font-size: 14px;
+    }
+
+    /* Remember me */
+    .remember {
+        font-size: 13px;
+    }
+
+    /* Button */
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Links */
+    .login-link {
+        font-size: 13px;
+    }
+    /* =========================
+   RESPONSIVE FIX (LOGIN / REGISTER)
+========================= */
+
+@@media (max-width: 768px) {
+
+    /* الصفحة */
+    .page {
+        padding: 20px;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* الكارد */
+    .card {
+        width: 100%;
+        max-width: 380px;
+        padding: 25px;
+        border-radius: 12px;
+    }
+
+    /* العنوان */
+    .card h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    /* input */
+    .input-box input,
+    .select-box select {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* labels */
+    .input-box label {
+        font-size: 13px;
+    }
+
+    /* أيقونة العين */
+    .password-box .toggle {
+        top: 10px;
+        font-size: 14px;
+    }
+
+    /* زرار */
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* روابط */
+    .login-link {
+        font-size: 13px;
+    }
+
+    /* validation errors */
+    span {
+        font-size: 11px;
+    }
+}
+
+/* small phones */
+@@media (max-width: 480px) {
+
+    .card {
+        padding: 20px;
+    }
+
+    .card h2 {
+        font-size: 20px;
+    }
+
+    button {
+        font-size: 13px;
+    }
+}
+}
 </style>
 <script>
     function togglePassword() {
