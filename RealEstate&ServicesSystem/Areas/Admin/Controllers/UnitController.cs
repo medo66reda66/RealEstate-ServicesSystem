@@ -121,16 +121,17 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Owner},{DS.Role_Employee},{DS.Role_Agent}")]
         public async Task<IActionResult> Add(AddUnitmodel addUnitmodel, CancellationToken cancellationToken)
         {
-            
+            var user = await _userManager.GetUserAsync(User);
+            var units = await _unitRepository.GetAllAsync(includes: [p => p.Property, p => p.UnitSupImgs], cancellationToken: cancellationToken);
             try
             { 
-            var user =await _userManager.GetUserAsync(User);
-            var units = await _unitRepository.GetAllAsync(includes:[p => p.Property,p => p.UnitSupImgs],cancellationToken:cancellationToken);
                 if (ModelState.IsValid)
                 {
+                    Random rnd = new Random();
+                    var randomUnitNumber = rnd.Next(1000, 9999);
                     var unit = new Unit()
                     {
-                        UnitNumber = addUnitmodel.UnitNumber,
+                        UnitNumber = randomUnitNumber,
                         Bedrooms = addUnitmodel.Bedrooms,
                         Bathrooms = addUnitmodel.Bathrooms,
                         AreaSize = addUnitmodel.AreaSize,
@@ -213,6 +214,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Owner},{DS.Role_Employee},{DS.Role_Agent}")]
         public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
+            var user = await _userManager.GetUserAsync(User);
             var unit = await _unitRepository.GetoneAsync(e=>e.Id == id, includes: [p => p.Property], cancellationToken: cancellationToken);
             var unitSupImgs = await _unitSupImgRepository.GetAllAsync(s => s.UnitId == id, cancellationToken: cancellationToken);
             if (unit == null)
@@ -233,7 +235,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
                 Purpose = unit.Purpose,
                 type = unit.type,
                 propertyId = unit.propertyId,
-                Property = (List<Property>)await _propertyRepository.GetAllAsync(cancellationToken: cancellationToken),
+                Property = (List<Property>)await _propertyRepository.GetAllAsync(p=>p.ApplicationuserId == user.Id,cancellationToken: cancellationToken),
                 ExistingImageUrl = unit.ImageUrl,
                 ExistingUnitSupImgs = (List<UnitSupImg>)unitSupImgs,
             };

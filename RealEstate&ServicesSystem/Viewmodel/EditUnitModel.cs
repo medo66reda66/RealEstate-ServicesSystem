@@ -9,16 +9,21 @@ namespace RealEstate_ServicesSystem.Viewmodel
         [Required]
         public int? UnitNumber { get; set; }
         [Required]
+        [Range(0, int.MaxValue)]
         public int? Bedrooms { get; set; }
         [Required]
+        [Range(0, int.MaxValue)]
         public int? Bathrooms { get; set; }
         [Required]
+        [Range(0, double.MaxValue)]
         public double? AreaSize { get; set; }
         [Required]
+        [Range(0, int.MaxValue)]
         public int? FloorNumber { get; set; }
         public string? ExistingImageUrl { get; set; }
         public IFormFile? ImageUrl { get; set; }
         [Required]
+        [Range(0, double.MaxValue)]
         public decimal? Price { get; set; }
         [Required]
         public string? Description { get; set; } = string.Empty;

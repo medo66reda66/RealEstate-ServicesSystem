@@ -101,6 +101,8 @@ namespace RealEstate_ServicesSystem
             app.UseRouting();
             app.UseSession();
 
+            app.UseStaticFiles();
+
             app.UseAuthorization();
             app.MapHub<NotificationHub>("/notificationHub");
 

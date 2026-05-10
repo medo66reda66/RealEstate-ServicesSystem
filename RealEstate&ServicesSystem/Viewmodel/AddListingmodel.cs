@@ -11,9 +11,9 @@ namespace RealEstate_ServicesSystem.Viewmodel
         public int UnitId { get; set; }
         [ValidateNever]
         public Unit? Units { get; set; }
-
         public DateTime? ListedAt { get; set; }
-        
+        [Required]
+        [Range(0, double.MaxValue)]
         public decimal? BrokerPercentage { get; set; }
         public bool? IsActive { get; set; }
        

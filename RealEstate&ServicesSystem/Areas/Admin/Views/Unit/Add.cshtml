@@ -4,7 +4,6 @@
 <h2 class="text-white mb-4">🏠 Add New Unit</h2>
 
 
-<
     @if (Model.Properties.Applicationuser.paid)
     {
     <div class="payment-box" style="background: #2e7d32; border-color: #1b5e20;">
@@ -27,11 +26,11 @@
 
         
         <!-- Unit Number -->
-        <div class="col-md-4 mb-3">
+        @* <div class="col-md-4 mb-3">
             <label class="form-label text-light">Unit Number</label>
             <input asp-for="UnitNumber" class="form-control" />
             <span asp-validation-for="UnitNumber" class="text-danger"></span>
-        </div>
+        </div> *@
 
         <!-- Bedrooms -->
         <div class="col-md-4 mb-3">

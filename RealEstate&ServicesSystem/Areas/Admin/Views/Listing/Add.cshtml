@@ -35,6 +35,7 @@
             <!-- Broker Percentage -->
             
             <input asp-for="BrokerPercentage" placeholder="Broker % نسبتك" />
+            <span class="text-danger" asp-validation-for="BrokerPercentage"></span>
 
             <!-- Listing Type -->
             <!-- Listing Type -->
@@ -46,6 +47,7 @@
                         asp-items="Html.GetEnumSelectList<RentPeriod>()">
                     <option value="">Rent Period</option>
                 </select>
+                <span class="text-danger" asp-validation-for="Rentperiod"></span>
                 </div>
             }else
             {
@@ -62,6 +64,7 @@
 
         <!-- Description -->
         <textarea asp-for="Description" placeholder="Description"></textarea>
+        <span class="text-danger" asp-validation-for="Description"></span>
 
         <button type="submit" class="btn btn-primary" @(Model.Applicationuser.paid ? "" : "disabled")>
             Submit

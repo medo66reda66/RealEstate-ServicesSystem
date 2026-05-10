@@ -106,11 +106,16 @@
         <div class="action-buttons">
             <div class="action-buttons">
 
+                   
+
                 <div class="top-buttons">
+                    
+                @if(User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_User))
+                {
                     <a href="/Admin/Review/AddReview/@Model.Id" class="btn add-review-btn">
                         + Add Review
                     </a>
-
+                }
                     <a href="/Admin/Review/AllNotificationUserListing/@Model.Id" class="btn view-reviews-btn">
                         👀 View Reviews
                     </a>

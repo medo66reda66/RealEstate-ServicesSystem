@@ -132,13 +132,13 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
            filterHome.Bathrooms != null ||
            filterHome.UnitPurpose != null;
 
-            ViewBag.totalpages = Math.Ceiling(listing.Count / 20.0);
-            listing = listing.Skip((page - 1) * 20).Take(20).ToList();
+            ViewBag.totalpages = Math.Ceiling(listing.Count / 15.0);
+            listing = listing.Skip((page - 1) * 15).Take(15).ToList();
             ViewBag.currentpage = page;
 
             return View(listing);
         }
-        [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_User},{DS.Role_Employee},{DS.Role_Agent}")]
+        [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_User},{DS.Role_Employee},{DS.Role_Agent},{DS.Role_Owner}")]
         public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
         {
 

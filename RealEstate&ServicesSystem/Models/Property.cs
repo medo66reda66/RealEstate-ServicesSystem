@@ -8,7 +8,7 @@
         public string Location { get; set; }
         public string PropertyType { get; set; }
         public string Description { get; set; }
-        public bool IsAvailable { get; set; }
+        public bool IsAvailable { get; set; } = true;
         public DateTime CreatedAt { get; set; }
 
         public string ApplicationuserId { get; set; }
