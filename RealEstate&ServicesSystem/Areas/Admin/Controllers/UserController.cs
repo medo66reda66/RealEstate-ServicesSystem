@@ -25,9 +25,31 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         }
         [HttpGet]
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Employee}")]
-        public async Task<IActionResult> Index(AllUserVM allUserVM,CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(AllUserVM allUserVM,FilterUserVM filterUserVM ,CancellationToken cancellationToken,int page = 1)
         {
             var users = _userManager.Users.ToList(); 
+            if (!string.IsNullOrEmpty(filterUserVM.Email))
+            {
+                users = users.Where(u => u.Email.Contains(filterUserVM.Email.Trim())).ToList();
+            }
+            if (!string.IsNullOrEmpty(filterUserVM.FullName))
+            {
+                users = users.Where(u => u.FullName.Contains(filterUserVM.FullName.Trim())).ToList();
+            }
+            if (!string.IsNullOrEmpty(filterUserVM.Role))
+            {
+                users = users.Where(u => _userManager.GetRolesAsync(u).Result.Contains(filterUserVM.Role)).ToList();
+            }
+
+                ViewBag.TotalPages = (int)Math.Ceiling(users.Count() / 10.0);
+                users = users.Skip((page - 1) * 10).Take(10).ToList();
+                ViewBag.CurrentPage = page;
+
+                ViewBag.Roles = (await _userRoleRepository.GetAllAsync(cancellationToken: cancellationToken, tracking: false))
+                .Select(r => r.Name)
+                .ToList()
+                ;
+
             return View(users);
         }
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Employee}")]

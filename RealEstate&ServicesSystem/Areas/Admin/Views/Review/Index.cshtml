@@ -1,0 +1,299 @@
+﻿@using RealEstate_ServicesSystem.Viewmodel
+@model AllReview
+
+@section Scripts {
+
+    @if (TempData["success"] != null)
+    {
+        <script>
+              toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": true,
+                  "positionClass": "toast-top-center",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+
+            toastr.success('@TempData["success"]');
+
+        </script>
+    }
+    @if (@TempData["error"] != null)
+    {
+        <script>
+                  toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": true,
+                      "positionClass": "toast-top-center",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                                }
+            toastr.error('@TempData["error"]');
+        </script>
+    }
+}
+<div class="filter-card">
+    <button class="filter-toggle" onclick="toggleFilter()">
+        ?? Filter Listings
+    </button>
+    <form method="get" class="filter-form" id="filterForm">
+
+        <div class="filter-grid">
+            <!-- EmailTo -->
+            <input type="text" name="EmailFrom" placeholder="Email From" />
+            <input type="text" name="EmailTo" placeholder="Email To" />
+            <input type="number" name="UnitNumber" placeholder="Unit Number" />
+           
+            <button type="submit" class="apply-btn">Apply Filter</button>
+        </div>
+    </form>
+</div>
+
+<div>
+    <h2 class="text-white mb-4">⭐ User Reviews</h2>
+   <table>
+        <thead>
+            <tr>
+                <th>Unit Number</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Create At</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var review in Model.reviews)
+            {
+                <tr>
+                    <td>@review.Listing.Unit.UnitNumber</td>
+                    <td>@review.Rating</td>
+                    <td>@review.Comment</td>
+                    <td>@review.User.Email</td>
+                    <td>@review.Listing.ApplicationUser.Email</td>
+                    <td>@review.CreatedAt.ToString("g")</td>
+                    <td>
+                        <a href="/Admin/Review/DeleteReview/@review.Id" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this review?');">
+                             Delete
+                        </a>
+                </tr>
+            }
+        </tbody>
+   </table>
+    <div class="pagination">
+
+        <!-- Previous -->
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a class="page-link"
+               href="?page=@(ViewBag.CurrentPage - 1)
+               &EmailFrom=@ViewBag.EmailFrom
+               &EmailTo=@ViewBag.EmailTo
+               &UnitNumber=@ViewBag.UnitNumber">
+                Prev
+            </a>
+        }
+
+        <!-- Pages -->
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a class="page-link @(i == ViewBag.CurrentPage ? "active" : "")"
+               href="?page=@i
+               &EmailFrom=@ViewBag.EmailFrom
+               &EmailTo=@ViewBag.EmailTo
+               &UnitNumber=@ViewBag.UnitNumber">
+                @i
+            </a>
+        }
+
+        <!-- Next -->
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a class="page-link"
+               href="?page=@(ViewBag.CurrentPage + 1)
+               &EmailFrom=@ViewBag.EmailFrom
+               &EmailTo=@ViewBag.EmailTo
+               &UnitNumber=@ViewBag.UnitNumber">
+                Next
+            </a>
+        }
+
+    </div>
+</div>
+
+ <style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-link {
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: #111827;
+        color: #cbd5e1;
+        border: 1px solid #1f2937;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .page-link:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .page-link.active {
+            background: #2563eb;
+            color: white;
+        }
+        .filter-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+        }
+
+        .filter-toggle {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .filter-toggle:hover {
+                background: #1d4ed8;
+            }
+
+        .filter-form {
+            display: none;
+            margin-top: 20px;
+        }
+
+            .filter-form.show {
+                display: block;
+            }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+            .filter-grid input {
+                background: #0f172a;
+                border: 1px solid #374151;
+                color: white;
+                padding: 10px;
+                border-radius: 10px;
+                outline: none;
+            }
+
+                .filter-grid input:focus {
+                    border-color: #3b82f6;
+                }
+
+        .apply-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .apply-btn:hover {
+                background: #15803d;
+            }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #111827;
+            color: #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+        }
+
+            table thead {
+                background: #1f2937;
+            }
+
+            table th,
+            table td {
+                padding: 14px 18px;
+                text-align: center;
+                border-bottom: 1px solid #374151;
+            }
+
+            table th {
+                color: #93c5fd;
+                font-weight: 600;
+                font-size: 15px;
+            }
+
+            table tbody tr {
+                transition: 0.3s ease;
+            }
+
+                table tbody tr:hover {
+                    background: #1e293b;
+                }
+
+        .btn-danger {
+            background: #dc2626;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+            .btn-danger:hover {
+                background: #b91c1c;
+                transform: scale(1.05);
+            }
+</style>
+    <script>
+        function toggleFilter() {
+            const form = document.getElementById("filterForm");
+            form.classList.toggle("show");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.get("EmailFrom") || params.get("EmailTo") || params.get("UnitNumber")) {
+                document.getElementById("filterForm").classList.add("show");
+            }
+        });
+    </script>

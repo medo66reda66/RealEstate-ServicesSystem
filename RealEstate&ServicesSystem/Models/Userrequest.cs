@@ -15,5 +15,7 @@
         public int ListingId { get; set; }
         public Listing? Listing { get; set; }
         public DateTime ReuquestAt { get; set; } = DateTime.UtcNow;
+        public string? ApplicationuserId { get; set; }
+        public Applicationuser? Applicationuser { get; set; }
     }
 }

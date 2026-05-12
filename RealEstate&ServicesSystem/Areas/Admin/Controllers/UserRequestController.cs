@@ -34,12 +34,33 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
             _hubContext = hubContext;
         }
 
-        public async Task<IActionResult> Index(ViewRequests viewRequests,CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(ViewRequests viewRequests,FilterRequestVM filterRequestVM,CancellationToken cancellationToken,int page = 1)
         {
-            var Requests =await _userrequestRepository.GetAllAsync(includes:[equals=>equals.Listing!,equals=>equals.Listing.ApplicationUser!,equals=>equals.Listing.Unit!,equals=>equals.Listing.Unit.Property,equals=>equals.Listing.Unit.Property.Applicationuser!],cancellationToken:cancellationToken,tracking:false);
+           
+            var Requests =await _userrequestRepository.GetAllAsync(includes:[equals=>equals.Applicationuser!,equals=>equals.Listing!,equals=>equals.Listing.ApplicationUser!,equals=>equals.Listing.Unit!,equals=>equals.Listing.Unit.Property,equals=>equals.Listing.Unit.Property.Applicationuser!],cancellationToken:cancellationToken,tracking:false);
+
+            if(filterRequestVM.ListingId != null)
+            {
+                Requests = Requests.Where(r => r.Listing.Unit.UnitNumber == filterRequestVM.ListingId);
+            }
+            if (!string.IsNullOrEmpty(filterRequestVM.EmailFrom))
+            {
+                Requests = Requests.Where(r => r.Applicationuser.Email.Contains(filterRequestVM.EmailFrom.Trim()));
+            }
+            if (!string.IsNullOrEmpty(filterRequestVM.EmailTo))
+            {
+                Requests = Requests.Where(r => r.Listing.ApplicationUser.Email.Contains(filterRequestVM.EmailTo.Trim()));
+            }
+
+           
+            ViewBag.TotalPages = (int)Math.Ceiling(Requests.Count() / 5.0);
+            Requests = Requests.Skip((page - 1) * 5).Take(5).ToList();
+            ViewBag.CurrentPage = page;
+
             var req = new ViewRequests()
             {
                 Userrequest = (List<Userrequest>)Requests,
+                Userrequest1 = new Userrequest(),
             };
 
             return View(req);
@@ -71,6 +92,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
                     RequestType = addRequestVM.RequestType,
                     ReuquestAt = addRequestVM.ReuquestAt,
                     ListingId = addRequestVM.Listing.Id,
+                    ApplicationuserId = sentUser.Id
 
                 };
                 await _userrequestRepository.AddAsync(req, cancellationToken: cancellationToken);

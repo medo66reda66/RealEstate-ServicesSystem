@@ -6,5 +6,6 @@ namespace RealEstate_ServicesSystem.Viewmodel
     {
         public List<Userrequest> Userrequest { get; set; }
         public Listing Listing { get; set; }
+        public Userrequest Userrequest1 { get; set; }
     }
 }

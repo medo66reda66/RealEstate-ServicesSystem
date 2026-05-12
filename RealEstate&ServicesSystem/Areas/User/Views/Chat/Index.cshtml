@@ -142,7 +142,7 @@
 
     /* صندوق الرسائل */
     .chat-box {
-        height: 450px;
+        height: 70vh;
         overflow-y: auto;
         border: none;
         padding: 15px;
@@ -206,4 +206,40 @@
             .chat-input-area button:hover {
                 background: #45a049;
             }
+    /* Responsive for mobile */
+    @@media (max-width: 768px) {
+        .chat-title
+
+    {
+        font-size: 20px;
+    }
+
+    .chat-box {
+        height: 65vh;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .chat-message {
+        max-width: 85%;
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .chat-input-area {
+        gap: 6px;
+    }
+
+        .chat-input-area input {
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .chat-input-area button {
+            padding: 10px 14px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+    }
 </style>

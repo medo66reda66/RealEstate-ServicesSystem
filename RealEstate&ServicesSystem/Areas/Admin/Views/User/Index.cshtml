@@ -56,7 +56,31 @@
         </script>
     }
  }
- 
+    <div class="filter-card">
+        <button class="filter-toggle" onclick="toggleFilter()">
+            ?? Filter Listings
+        </button>
+        <form method="get" class="filter-form" id="filterForm">
+
+            <div class="filter-grid">
+                <!-- EmailTo -->
+                <input type="text" name="Email" placeholder="Email" />
+                <input type="text" name="FullName" placeholder="Full Name" />
+                <select name="Role" class="form-select">
+                    <option  value="">Select Role</option>
+                    @foreach (var role in ViewBag.Roles)
+                    {
+                        <option value="@role">@role</option>
+                    }
+
+                </select>
+
+                <button type="submit" class="apply-btn">Apply Filter</button>
+            </div>
+        </form>
+    </div>
+
+
     <table class="table table-dark table-striped">
         <thead>
             <tr>
@@ -102,9 +126,165 @@
             }
         </tbody>
     </table>
+    <div class="pagination">
+
+        <!-- Previous -->
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a class="page-link"
+               href="?page=@(ViewBag.CurrentPage - 1)
+               &Email=@Context.Request.Query["Email"]
+               &FullName=@Context.Request.Query["FullName"]
+               &Role=@Context.Request.Query["Role"]">
+                Prev
+            </a>
+        }
+
+        <!-- Pages -->
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a class="page-link @(i == ViewBag.CurrentPage ? "active" : "")"
+               href="?page=@i
+               &Email=@Context.Request.Query["Email"]
+               &FullName=@Context.Request.Query["FullName"]
+               &Role=@Context.Request.Query["Role"]">
+                @i
+            </a>
+        }
+
+        <!-- Next -->
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a class="page-link"
+               href="?page=@(ViewBag.CurrentPage + 1)
+               &Email=@Context.Request.Query["Email"]
+               &FullName=@Context.Request.Query["FullName"]
+               &Role=@Context.Request.Query["Role"]">
+                Next
+            </a>
+        }
+
+    </div>
 </div>
 
 <style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-link {
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: #111827;
+        color: #cbd5e1;
+        border: 1px solid #1f2937;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .page-link:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .page-link.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 0 12px rgba(37,99,235,0.5);
+        }
+    .filter-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    .filter-toggle {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .filter-toggle:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+    .filter-form {
+        margin-top: 15px;
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+        .filter-form.show {
+            display: block;
+        }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+    }
+
+        .filter-grid input,
+        .filter-grid select {
+            background: #0f172a;
+            border: 1px solid #1f2937;
+            padding: 10px;
+            border-radius: 10px;
+            color: #e5e7eb;
+            outline: none;
+            transition: 0.3s;
+        }
+
+            .filter-grid input:focus,
+            .filter-grid select:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 10px rgba(37,99,235,0.4);
+            }
+
+    .apply-btn {
+        background: #22c55e;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .apply-btn:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
     /* Custom Blue Button */
     .btn-unblock {
         background: linear-gradient(45deg, #0d6efd, #4dabf7);
@@ -119,6 +299,29 @@
         }
 </style>
 <script>
+
+    function toggleFilter() {
+        const form = document.getElementById("filterForm");
+        if (!form) return;
+
+        form.classList.toggle("show");
+    }
+
+    // Auto open filter if query exists
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.has("Email") ||
+            urlParams.has("FullName") ||
+            urlParams.has("Role")) {
+
+            const form = document.getElementById("filterForm");
+            if (form) {
+                form.classList.add("show");
+            }
+        }
+    });
              document.addEventListener("DOMContentLoaded", function () {
 
         document.querySelectorAll(".btn-danger, .btn-unblock").forEach(btn => {

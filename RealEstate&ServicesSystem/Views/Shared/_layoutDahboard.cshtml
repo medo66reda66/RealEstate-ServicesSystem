@@ -68,40 +68,22 @@
     </style>
 </head>
 <body>
-    @if (User.IsInRole($"{DS.Role_Admin},{DS.Role_Employee}"))
+    @if (User.IsInRole($"{DS.Role_Admin}") || User.IsInRole($"{DS.Role_Employee}"))
     {
         <!-- SIDEBAR -->
         <div class="sidebar">
             <h4 class="text-white mb-4">🏠 RealEstate</h4>
-            @if (User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee))
-
-            {
-
-
-
+     
                 <a href="/Admin/Dashboard/Index">Dashboard</a>
                 <a href="/Admin/Property/Allproperty">Properties</a>
                 <a href="/Admin/Unit/Allunit">Units</a>
                 <a href="/Admin/Listing/AllListing">Listings</a>
                 <a href="/Admin/UserRequest/Index">Requests</a>
-                <a href="/Admin/Reviews/Index">Reviews</a>
                 <a href="/Admin/User/Index">Users</a>
+                <a href="/Admin/Review/Index">Reviews</a>
                 <a href="/User/Home/Index" class="btn btn-primary">
                     Back Marketplace
                 </a>
-
-            }
-
-            else
-
-            {
-
-                <p style="color:gray;">Welcome to Real Estate System</p>
-                <a href="/User/Home/Index" class="btn btn-primary">
-                    Browse Properties
-                </a>
-
-            }
         </div>
     }else
     {

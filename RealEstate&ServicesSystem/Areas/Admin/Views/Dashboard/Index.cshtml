@@ -1,137 +1,327 @@
-﻿@using RealEstate_ServicesSystem.Utilities.DBinitializer
-<div class="main">
+@using RealEstate_ServicesSystem.Utilities.DBinitializer
+@using RealEstate_ServicesSystem.Viewmodel
+@model DashboardVM
 
+<div class="main-dashboard-container animate-fade-in">
     <!-- TOP CARDS -->
-    <div class="row g-3">
+    <div class="row g-4 mb-4">
         @if (User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee))
         {
             <div class="col-md-3">
-                <div class="stat-box">
-                    <h6>Total Properties</h6>
-                    <h3 id="pCount">120</h3>
-                </div>
-            </div>
-           
-        }else
-        {
-             <div class="col-md-3">
-                <div class="stat-box">
-                    <h6></h6>
-                    <h3 id="pCount">120</h3>
+                <div class="stat-card shadow-sm">
+                    <div class="stat-icon bg-primary-soft">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="stat-content">
+                        <p class="stat-label">Total Properties</p>
+                        <h3 class="stat-value" id="pCount">@Model.TotalProperties</h3>
+                    </div>
                 </div>
             </div>
         }
-        @if (User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee) || User.IsInRole(DS.Role_Agent) || User.IsInRole(DS.Role_Owner))
-        {
-         <div class="col-md-3">
-                <div class="stat-box">
-                <h6>Units</h6>
-                <h3 id="uCount">340</h3>
-                </div>
-            </div>
-        }else
-        {
-           <div class="col-md-3">
-                <div class="stat-box">
-                <h6></h6>
-                <h3 id="uCount">340</h3>
-                </div>
-            </div>
-        }
-        @if (User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee) )
-        {
-            <div class="col-md-3">
-                <div class="stat-box">
-                <h6>Listings</h6>
-                <h3 id="lCount">98</h3>
-                </div>
-            </div>
-        }else
-        {
-            <div class="col-md-3">
-                <div class="stat-box">
-                    <h6> </h6>
-                    <h3 id="lCount">98</h3>
-                </div>
-            </div>
-        }
-        @if (User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee))
-        {
-            <div class="col-md-3">
-                <div class="stat-box">
-                <h6>Requests</h6>
-                <h3 id="rCount">56</h3>
-                </div>
-            </div>
-        }
-      </div>
-        
 
-    <!-- CHART -->
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <div class="card card-dark p-3">
-                <h6>Activity Overview</h6>
-                <canvas id="chart"></canvas>
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm">
+                <div class="stat-icon bg-success-soft">
+                    <i class="bi bi-door-open"></i>
+                </div>
+                <div class="stat-content">
+                    <p class="stat-label">Units</p>
+                    <h3 class="stat-value" id="uCount">@Model.TotalUnits</h3>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card card-dark p-3">
-                <h6>Recent Requests</h6>
-                <ul class="list-group list-group-flush" id="reqList"></ul>
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm">
+                <div class="stat-icon bg-warning-soft">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+                <div class="stat-content">
+                    <p class="stat-label">Listings</p>
+                    <h3 class="stat-value" id="lCount">@Model.TotalListings</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm">
+                <div class="stat-icon bg-info-soft">
+                    <i class="bi bi-envelope-paper"></i>
+                </div>
+                <div class="stat-content">
+                    <p class="stat-label">Requests</p>
+                    <h3 class="stat-value" id="rCount">@Model.TotalRequests</h3>
+                </div>
             </div>
         </div>
     </div>
-    <!-- TABLE -->
-    <div class="card card-dark mt-4 p-3">
-        <h6>Latest Listings</h6>
-        <table class="table table-dark table-hover">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Unit</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="listingTable"></tbody>
-        </table>
+
+    <!-- CHART & RECENT REQUESTS -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="m-0">Activity Overview</h5>
+                    <span class="badge bg-primary-soft text-primary">Last 6 Months</span>
+                </div>
+                <div class="chart-container" style="position: relative; height:300px; width:100%">
+                    <canvas id="dashboardChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100">
+                <h5 class="mb-4">Recent Requests</h5>
+                <div class="request-list">
+                    @if (Model.RecentRequests != null && Model.RecentRequests.Any())
+                    {
+                        @foreach (var req in Model.RecentRequests)
+                        {
+                            <div class="request-item d-flex align-items-center mb-3">
+                                <div class="req-icon me-3">
+                                    <i class="bi bi-circle-fill text-primary small"></i>
+                                </div>
+                                <div class="req-details">
+                                    <p class="mb-0 fw-bold">@req.RequestType</p>
+                                    <small class="text-muted">@req.ReuquestAt.ToString("MMM dd, HH:mm")</small>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No recent requests.</p>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- LATEST LISTINGS TABLE -->
+    <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="m-0">Latest Listings</h5>
+            <a href="/Admin/Listing/AllListing" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Unit</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.LatestListings)
+                    {
+                        <tr>
+                            <td>#@item.Id</td>
+                            <td>@(item.Unit?.UnitNumber.ToString() ?? "N/A")</td>
+                            <td>@item.Price.ToString("C0")</td>
+                            <td>
+                                <span class="badge @(item.IsActive ? "bg-success-soft text-success" : "bg-danger-soft text-danger")">
+                                    @(item.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>@item.createAt.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
+<style>
+    /* Premium Dashboard Styles */
+    :root {
+        --primary-soft: rgba(78, 140, 255, 0.1);
+        --success-soft: rgba(40, 167, 69, 0.1);
+        --warning-soft: rgba(255, 193, 7, 0.1);
+        --info-soft: rgba(23, 162, 184, 0.1);
+        --danger-soft: rgba(220, 53, 69, 0.1);
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-card {
+        background: #111a2e;
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        transition: transform 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(78, 140, 255, 0.3);
+    }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 16px;
+    }
+
+    .bg-primary-soft { background: var(--primary-soft); color: #4e8cff; }
+    .bg-success-soft { background: var(--success-soft); color: #28a745; }
+    .bg-warning-soft { background: var(--warning-soft); color: #ffc107; }
+    .bg-info-soft { background: var(--info-soft); color: #17a2bb; }
+    .bg-danger-soft { background: var(--danger-soft); color: #dc3545; }
+
+    .stat-label {
+        color: #8a94ad;
+        font-size: 14px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        color: #fff;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .glass-card {
+        background: #111a2e;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .table-custom {
+        color: #eaeaea;
+    }
+
+    .table-custom thead th {
+        background: transparent;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        color: #8a94ad;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        padding: 16px;
+    }
+
+    .table-custom tbody td {
+        padding: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        vertical-align: middle;
+    }
+
+    .table-custom tbody tr:hover {
+        background: rgba(255,255,255,0.02);
+    }
+
+    .request-item {
+        padding: 12px;
+        border-radius: 12px;
+        transition: background 0.2s;
+    }
+
+    .request-item:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // fake dynamic data
-    const requests=["Visit request","Buy inquiry","Rent request","Inspection","Question"];
-    const listings=[
-      {id:1,unit:"101",price:"1.5M",status:"Active"},
-      {id:2,unit:"202",price:"2.2M",status:"Pending"},
-      {id:3,unit:"303",price:"3.1M",status:"Active"}
-    ];
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('dashboardChart').getContext('2d');
+        
+        // Data from Model
+        const labels = @Html.Raw(Json.Serialize(Model.Months));
+        const dataValues = @Html.Raw(Json.Serialize(Model.ListingsPerMonth));
 
-    // render requests
-    let reqList=document.getElementById("reqList");
-    requests.forEach(r=>{
-      reqList.innerHTML+=`<li class='list-group-item bg-transparent text-white'>${r}</li>`;
-    });
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(78, 140, 255, 0.4)');
+        gradient.addColorStop(1, 'rgba(78, 140, 255, 0)');
 
-    // render table
-    let table=document.getElementById("listingTable");
-    listings.forEach(l=>{
-      table.innerHTML+=`<tr><td>${l.id}</td><td>${l.unit}</td><td>${l.price}</td><td>${l.status}</td></tr>`;
-    });
-
-    // chart
-    new Chart(document.getElementById('chart'),{
-      type:'line',
-      data:{
-        labels:['Jan','Feb','Mar','Apr','May'],
-        datasets:[{
-          label:'Activity',
-          data:[10,20,15,30,25],
-          borderColor:'#4e8cff'
-        }]
-      }
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'New Listings',
+                    data: dataValues,
+                    borderColor: '#4e8cff',
+                    borderWidth: 3,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#4e8cff',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#111a2e',
+                        titleColor: '#fff',
+                        bodyColor: '#eaeaea',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        displayColors: false,
+                        padding: 12
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255,255,255,0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#8a94ad',
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#8a94ad'
+                        }
+                    }
+                }
+            }
+        });
     });
 </script>
+

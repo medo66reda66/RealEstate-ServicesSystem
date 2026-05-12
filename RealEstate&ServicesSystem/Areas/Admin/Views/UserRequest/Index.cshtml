@@ -1,166 +1,350 @@
-﻿@model RealEstate_ServicesSystem.Viewmodel.ViewRequests
+@using RealEstate_ServicesSystem.Models
+@model RealEstate_ServicesSystem.Viewmodel.ViewRequests
 
+<div class="filter-card">
+    <button class="filter-toggle" onclick="toggleFilter()">
+        ?? Filter Listings
+    </button>
+    <form method="get" class="filter-form" id="filterForm">
 
-@section Scripts {
-
-    @if (TempData["success"] != null)
-    {
-        <script>
-              toastr.options = {
-                  "closeButton": false,
-                  "debug": false,
-                  "newestOnTop": false,
-                  "progressBar": true,
-                  "positionClass": "toast-top-center",
-                  "preventDuplicates": false,
-                  "onclick": null,
-                  "showDuration": "300",
-                  "hideDuration": "1000",
-                  "timeOut": "5000",
-                  "extendedTimeOut": "1000",
-                  "showEasing": "swing",
-                  "hideEasing": "linear",
-                  "showMethod": "fadeIn",
-                  "hideMethod": "fadeOut"
-                }
-
-            toastr.success('@TempData["success"]');
-
-        </script>
-    }
-    @if (@TempData["error"] != null)
-    {
-        <script>
-                  toastr.options = {
-                      "closeButton": false,
-                      "debug": false,
-                      "newestOnTop": false,
-                      "progressBar": true,
-                      "positionClass": "toast-top-center",
-                      "preventDuplicates": false,
-                      "onclick": null,
-                      "showDuration": "300",
-                      "hideDuration": "1000",
-                      "timeOut": "5000",
-                      "extendedTimeOut": "1000",
-                      "showEasing": "swing",
-                      "hideEasing": "linear",
-                      "showMethod": "fadeIn",
-                      "hideMethod": "fadeOut"
-                                }
-            toastr.error('@TempData["error"]');
-        </script>
-    }
-}
-
-<div class="table-container">
-    <h1>User Requests</h1>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Request Type</th>
-                <th>Message</th>
-                <th>Listing Description</th>
-                <th>Unit Description</th>
-                <th>Unit Number</th>
-                <th>City</th>
-                <th>Location</th>
-                <th>Address</th>
-                <th>CreateAt</th>
-                <th>From</th>
-                <th>to</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var request in Model.Userrequest)
-            {
-                <tr>
-                    <td>@request.Id</td>
-                    <td>@request.RequestType</td>
-                    <td>@request.msg</td>
-                    <td>@request.Listing.Description</td>
-                    <td>@request.Listing.Unit.Description</td>
-                    <td>@request.Listing.Unit.UnitNumber</td>
-                    <td>@request.Listing.Unit.Property.City</td>
-                    <td>@request.Listing.Unit.Property.Location</td>
-                    <td>@request.Listing.Unit.Property.Address</td>
-                    <td>@request.ReuquestAt</td>
-                    <td>@request.Listing.ApplicationUser.Email</td>
-                    <td>@request.Listing.Unit.Property.Applicationuser.Email</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        <div class="filter-grid">
+            <input type="number" name="ListingId" placeholder="Unit Number" />
+            <!-- EmailTo -->
+            <input type="text" name="EmailTo" placeholder="Email To"  />
+            <input type="text" name="EmailFrom" placeholder="Email From"  />
+            
+            <button type="submit" class="apply-btn">Apply Filter</button>
+        </div>
+    </form>
 </div>
 
-                    <style>
-    /* ===== Table Container ===== */
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    <!-- TABLE -->
+    <div class="glass-card overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>From</th>
+                        <th>to</th>
+                        <th>Unit Details</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Userrequest.Any())
+                    {
+                        @foreach (var request in Model.Userrequest)
+                        {
+                            <tr>
+                                <td class="fw-bold text-primary">#@request.Id</td>
+                                <td>
+                                    <span class="badge bg-info-soft text-info">@request.RequestType</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="small text-white">From:@request.Applicationuser.Email</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                    <span class="small text-muted"> @request.Listing.ApplicationUser.Email</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold">@request.Listing.Unit.UnitNumber</span>
+                                        <small class="text-muted">@request.Listing.Unit.Property.City, @request.Listing.Unit.Property.Location</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="mb-0 text-truncate" style="max-width: 200px;" title="@request.msg">@request.msg</p>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@request.ReuquestAt.ToString("MMM dd, yyyy HH:mm")</small>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">No requests found matching your filters.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+
+<div class="pagination">
+
+    <!-- Previous -->
+    @if (ViewBag.CurrentPage > 1)
+    {
+        <a class="page-link"
+           href="?page=@(ViewBag.CurrentPage - 1)">
+            Prev
+        </a>
+    }
+
+    <!-- Pages -->
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {
+        <a class="page-link @(i == ViewBag.CurrentPage ? "active" : "")"
+           href="?page=@i">
+            @i
+        </a>
+    }
+
+    <!-- Next -->
+    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+    {
+        <a class="page-link"
+           href="?page=@(ViewBag.CurrentPage + 1)">
+            Next
+        </a>
+    }
+
+</div>
+
+</div>
+
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+    }
+
+    /* base button */
+    .page-link {
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: #111827;
+        color: #cbd5e1;
+        border: 1px solid #1f2937;
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.25s ease-in-out;
+        min-width: 40px;
+        text-align: center;
+    }
+
+        /* hover */
+        .page-link:hover {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+        }
+
+        /* active page */
+        .page-link.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+            box-shadow: 0 0 15px rgba(37,99,235,0.6);
+        }
+
+        /* Prev / Next highlight */
+        .page-link:first-child,
+        .page-link:last-child {
+            font-weight: 600;
+        }
+    .filter-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    .filter-toggle {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
         transition: 0.3s;
     }
 
-        /* Table Header */
-        .table thead {
-            background: linear-gradient(45deg, #0d6efd, #6610f2);
-            color: white;
+        .filter-toggle:hover {
+            background: #1d4ed8;
         }
 
-            .table thead th {
-                padding: 14px;
-                font-size: 14px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-        /* Table Body */
-        .table tbody td {
-            padding: 12px;
-            font-size: 14px;
-            color: #333;
-            border-bottom: 1px solid #eee;
-        }
-
-        /* Row Hover Effect */
-        .table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-            .table tbody tr:hover {
-                background: rgba(13,110,253,0.06);
-                transform: scale(1.01);
-            }
-
-            /* Zebra effect (optional) */
-            .table tbody tr:nth-child(even) {
-                background: #fafafa;
-            }
-
-    /* Title */
-    h1 {
-        font-weight: bold;
-        margin-bottom: 15px;
-        color: #333;
+    .filter-form {
+        margin-top: 15px;
+        display: none; /* hidden by default */
+        animation: fadeIn 0.3s ease-in-out;
     }
 
-    /* Responsive */
-     (max-width: 768px) {
-        .table
+        .filter-form.show {
+            display: block;
+        }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+    }
+
+        .filter-grid input,
+        .filter-grid select {
+            background: #0f172a;
+            border: 1px solid #1f2937;
+            padding: 10px;
+            border-radius: 10px;
+            color: #e5e7eb;
+            outline: none;
+            transition: 0.3s;
+        }
+
+            .filter-grid input:focus,
+            .filter-grid select:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 10px rgba(37,99,235,0.4);
+            }
+
+    .apply-btn {
+        background: #22c55e;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .apply-btn:hover {
+            background: #16a34a;
+        }
+
+    @@keyframes fadeIn {
+        from
 
     {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+    .main-content-container {
+        padding: 10px;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .glass-card {
+        background: #111a2e;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .bg-primary-soft { background: rgba(78, 140, 255, 0.1); color: #4e8cff; }
+    .bg-info-soft { background: rgba(23, 162, 184, 0.1); color: #17a2bb; }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255,255,255,0.05);
+        border-color: #4e8cff;
+        color: #fff;
+        box-shadow: none;
+    }
+
+    .table-custom {
+        color: #eaeaea;
+    }
+
+    .table-custom thead th {
+        background: rgba(255,255,255,0.02);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        color: #8a94ad;
+        font-weight: 600;
+        text-transform: uppercase;
         font-size: 12px;
+        padding: 16px;
     }
 
-    .table thead th,
-    .table tbody td {
-        padding: 8px;
+    .table-custom tbody td {
+        padding: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        vertical-align: middle;
     }
 
+    .table-custom tbody tr:hover {
+        background: rgba(255,255,255,0.02);
     }
-                    </style>
+
+    .pagination-custom .page-link {
+        background: #111a2e;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #8a94ad;
+        margin: 0 3px;
+        border-radius: 8px !important;
+        padding: 8px 16px;
+        transition: all 0.3s;
+    }
+
+    .pagination-custom .page-item.active .page-link {
+        background: #4e8cff;
+        border-color: #4e8cff;
+        color: #fff;
+    }
+
+    .pagination-custom .page-link:hover {
+        background: rgba(78, 140, 255, 0.2);
+        color: #fff;
+    }
+
+    .pagination-custom .page-item.disabled .page-link {
+        background: transparent;
+        color: #444;
+        border-color: rgba(255,255,255,0.05);
+    }
+</style>
+<script>
+    function toggleFilter() {
+        const form = document.getElementById("filterForm");
+
+        if (!form) return;
+
+        form.classList.toggle("show");
+    }
+
+    // optional: open filter if query exists
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.toString().length > 0) {
+            const form = document.getElementById("filterForm");
+            if (form) {
+                form.classList.add("show");
+            }
+        }
+    });
+</script>

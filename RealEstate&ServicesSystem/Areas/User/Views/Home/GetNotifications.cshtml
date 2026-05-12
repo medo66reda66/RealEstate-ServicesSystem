@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_LayoutNotification.cshtml";
 }
 
-@if(User.IsInRole(DS.Role_User))
+@if(User.IsInRole($"{DS.Role_User}"))
 {
     <div class="notifications-container">
 
@@ -15,6 +15,7 @@
 
                 @foreach (var notification in Model.NotificationUser)
                 {
+                   <div class="notif-wrapper">
                     <a href="@notification.Url"
                        class="notif-item"
                        onclick="markAsRead(@notification.Id, this)">
@@ -44,15 +45,16 @@
                         }
 
                     </a>
-                <div class="chat-action">
+                <div class="chat-action ">
                     <a class="chat-btn"
                        href="@Url.Action("Index", "Chat", new { area = "User", userId = notification.UserId })">
                         💬 Go to chat
                     </a>
                 </div>
+              </div>
                 }
         </div>
-            </div>
+     </div>
  }
 
     
