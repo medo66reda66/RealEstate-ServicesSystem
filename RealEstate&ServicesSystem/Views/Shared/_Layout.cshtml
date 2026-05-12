@@ -87,7 +87,7 @@
                         </a>
                     </li>
                 }
-                @if(User.IsInRole($"{DS.Role_Agent}") || User.IsInRole($"{DS.Role_Owner}"))
+                @if(User.IsInRole($"{DS.Role_Agent}") || User.IsInRole($"{DS.Role_Owner}") || User.IsInRole($"{DS.Role_User}"))
                 {
                     <a href="/User/Home/GetNotifications" class="notification-bell position-relative">
                         <i class="bi bi-bell" id="bell"></i>

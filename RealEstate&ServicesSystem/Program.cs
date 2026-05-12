@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using RealEstate_ServicesSystem.DATABS;
 using RealEstate_ServicesSystem.Models;
-using RealEstate_ServicesSystem.NotificationSignalR;
 using RealEstate_ServicesSystem.Repository;
 using RealEstate_ServicesSystem.Repository.IRepository;
+using RealEstate_ServicesSystem.SignalR.ChatSignalR;
+using RealEstate_ServicesSystem.SignalR.NotificationSignalR;
 using RealEstate_ServicesSystem.Utilities;
 using RealEstate_ServicesSystem.Utilities.DBinitializer;
 using RealEstate_ServicesSystem.Utilities.IDBinitializer;
@@ -69,6 +70,7 @@ namespace RealEstate_ServicesSystem
             builder.Services.AddScoped<IRepository<Userrequest>, Repository<Userrequest>>();
             builder.Services.AddScoped<IRepository<Notification>, Repository<Notification>>();
             builder.Services.AddScoped<IRepository<UserReview>, Repository<UserReview>>();
+            builder.Services.AddScoped<IRepository<Massage>, Repository<Massage>>();
             builder.Services.AddScoped<IRepository<Favorite>, Repository<Favorite>>();
             builder.Services.AddScoped<ISupImgRepository, SupImgRepository>();
             builder.Services.AddScoped<IDBintializer, DBintializer>();
@@ -80,6 +82,7 @@ namespace RealEstate_ServicesSystem
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            builder.Services.AddSignalR();
             var app = builder.Build();
             var SCOPE = app.Services.CreateScope();
             var DBinitializer = SCOPE.ServiceProvider.GetService<IDBintializer>();
@@ -105,6 +108,8 @@ namespace RealEstate_ServicesSystem
             app.UseStaticFiles();
 
             app.UseAuthorization();
+            
+            app.MapHub<ChatHub>("/chatHub");
             app.MapHub<NotificationHub>("/notificationHub");
 
             app.MapStaticAssets();

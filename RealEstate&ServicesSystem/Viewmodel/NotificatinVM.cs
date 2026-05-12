@@ -6,6 +6,7 @@ namespace RealEstate_ServicesSystem.Viewmodel
     {
         public List<Notification>? NotificationListing { get; set; }
         public List<Notification>? NotificationOwner { get; set; }
+        public List<Notification>? NotificationUser { get; set; }
         public Applicationuser? Applicationuser { get; set; }
     }
 }

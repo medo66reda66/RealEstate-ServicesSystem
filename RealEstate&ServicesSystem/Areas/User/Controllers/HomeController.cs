@@ -36,6 +36,10 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
             this.notificationRepository = notificationRepository;
             this.favoriteRepository = favoriteRepository;
         }
+        public IActionResult Chat()
+        {
+            return View();
+        }
         public async Task<IActionResult> Favorites()
         {
             var user = await userManager.GetUserAsync(User);
@@ -98,6 +102,11 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
                 .OrderByDescending(n => n.CreatedAt)
                 .Take(10)
                 .ToList(),
+
+                NotificationUser = (List<Notification>)(await notificationRepository.GetAllAsync(n => n.FromUserId == user.Id, includes: [ nameof=>nameof.User], cancellationToken: cancellationToken, tracking: false))
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(10)
+                .ToList(),  
 
                  Applicationuser = user
             };

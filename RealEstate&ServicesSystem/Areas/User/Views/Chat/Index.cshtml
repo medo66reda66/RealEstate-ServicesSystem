@@ -1,0 +1,209 @@
+﻿@{
+    ViewData["Title"] = "Chat";
+    var currentUserId = ViewBag.CurrentUserId;
+    var receiverId = ViewBag.ReceiverId;
+    // الشخص اللي بتكلمه
+}
+@{
+    Layout = "~/Views/Shared/_LayoutNotification.cshtml";
+}
+
+<h2 class="chat-title">💬 Chat</h2>
+
+<input type="hidden" id="currentUserId" value="@currentUserId" />
+<input type="hidden" id="receiverId" value="@receiverId" />
+
+<div id="chatBox" class="chat-box"></div>
+
+<div class="chat-input-area">
+    <input type="text" id="messageInput" placeholder="اكتب الرسالة..." />
+    <button id="sendBtn">Send</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+<script>
+    const receiverId = document.getElementById("receiverId").value;
+    const chatBox = document.getElementById("chatBox");
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    // =========================
+    // SignalR Connection
+    // =========================
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .build();
+
+        connection.start().then(() => {
+
+        console.log("Connected");
+
+        // ممكن هنا تفتح loadMessages برضه
+       loadMessages();
+    });
+
+    // =========================
+    // استقبال الرسائل الجديدة
+    // =========================
+        connection.on("ReceiveMessage", function (senderId, message) {
+
+        const currentUserId = document.getElementById("currentUserId").value;
+
+        const isMe = senderId === currentUserId;
+
+        appendMessage(senderId, message, isMe);
+    });
+
+    // =========================
+    // إرسال رسالة
+    // =========================
+    sendBtn.addEventListener("click", async function () {
+
+        const message = messageInput.value.trim();
+
+        if (!message) return;
+
+        try {
+            await connection.invoke("SendMessage", receiverId, message);
+            messageInput.value = "";
+        }
+        catch (err) {
+            console.error(err.toString());
+        }
+    });
+
+    // =========================
+    // تحميل الرسائل القديمة
+    // =========================
+    async function loadMessages() {
+        const response = await fetch(`/user/Chat/GetMessages?userId=${receiverId}`);
+        const messages = await response.json();
+
+        chatBox.innerHTML = "";
+        const currentUserId = document.getElementById("currentUserId").value;
+        messages.forEach(msg => {
+
+            // لو أنا المرسل
+            const isMe = msg.senderId === currentUserId;
+
+            appendMessage(msg.senderId, msg.content, isMe);
+        });
+    }
+
+    // =========================
+    // رسم الرسالة في الصفحة
+    // =========================
+    function appendMessage(sender, message, isMe) {
+
+        const div = document.createElement("div");
+
+        div.style.margin = "10px";
+        div.style.padding = "10px";
+        div.style.borderRadius = "10px";
+        div.style.maxWidth = "60%";
+
+        if (isMe) {
+            div.style.backgroundColor = "#d1ffd6";
+            div.style.marginLeft = "auto";
+            div.style.textAlign = "right";
+        }
+        else {
+            div.style.backgroundColor = "#f1f1f1";
+            div.style.marginRight = "auto";
+            div.style.textAlign = "left";
+        }
+
+        div.innerHTML = `<strong>${sender}</strong><br/>${message}`;
+
+        chatBox.appendChild(div);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // أول ما الصفحة تفتح
+        connection.start().then(() => {
+        loadMessages();
+    });
+</script>
+<style>
+    /* الصفحة العامة */
+    body {
+        background: #f5f7fb;
+        font-family: Arial, sans-serif;
+    }
+
+    /* عنوان الشات */
+    .chat-title {
+        text-align: center;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    /* صندوق الرسائل */
+    .chat-box {
+        height: 450px;
+        overflow-y: auto;
+        border: none;
+        padding: 15px;
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    /* الرسائل */
+    .chat-message {
+        padding: 10px 14px;
+        margin: 8px 0;
+        border-radius: 15px;
+        max-width: 60%;
+        word-wrap: break-word;
+        font-size: 14px;
+    }
+
+    /* رسالة أنا */
+    .chat-me {
+        background: #dcf8c6;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    /* رسالة الطرف التاني */
+    .chat-other {
+        background: #f1f0f0;
+        margin-right: auto;
+        text-align: left;
+    }
+
+    /* منطقة الإدخال */
+    .chat-input-area {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+        /* input */
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* button */
+        .chat-input-area button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            background: #4caf50;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+            .chat-input-area button:hover {
+                background: #45a049;
+            }
+</style>

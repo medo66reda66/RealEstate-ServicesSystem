@@ -1,0 +1,19 @@
+﻿<div id="chatBox">
+
+    @foreach (var msg in ViewBag.Messages)
+    {
+        if (msg.SenderId == ViewBag.CurrentUserId)
+        {
+            <div style="text-align:right; background:#d1ffd6; margin:5px; padding:8px;">
+                <b>Me:</b> @msg.Content
+            </div>
+        }
+        else
+        {
+            <div style="text-align:left; background:#f1f1f1; margin:5px; padding:8px;">
+                <b>@msg.SenderId:</b> @msg.Content
+            </div>
+        }
+    }
+
+</div>

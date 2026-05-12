@@ -8,9 +8,9 @@ using RealEstate_ServicesSystem.Models;
 using RealEstate_ServicesSystem.Repository.IRepository;
 using RealEstate_ServicesSystem.Utilities.DBinitializer;
 using RealEstate_ServicesSystem.Viewmodel;
-using RealEstate_ServicesSystem.NotificationSignalR;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
+using RealEstate_ServicesSystem.SignalR.NotificationSignalR;
 
 namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
 {

@@ -6,6 +6,58 @@
     Layout = "~/Views/Shared/_LayoutNotification.cshtml";
 }
 
+@if(User.IsInRole(DS.Role_User))
+{
+    <div class="notifications-container">
+
+        <h2 class="section-title mb-4">🔔 Notifications</h2>
+            <div class="notif-list">
+
+                @foreach (var notification in Model.NotificationUser)
+                {
+                    <a href="@notification.Url"
+                       class="notif-item"
+                       onclick="markAsRead(@notification.Id, this)">
+
+                        <div class="notif-icon">
+                            🔔
+                        </div>
+
+                        <div class="notif-content">
+                            <div class="notif-message" id="notif-from-@notification.Id">
+                                <strong>From:</strong> @notification.User.Email?
+                            </div>
+
+                            <div class="notif-message" id="notif-message-@notification.Id">
+                                <strong>Message:@notification.Message</strong> <br />
+                                phone: @notification.User.PhoneNumber
+                            </div>
+
+                            <div class="notif-date" id="notif-date-@notification.Id">
+                                @notification.CreatedAt.ToString("MMM dd, yyyy - hh:mm tt")
+                            </div>
+                        </div>
+
+                        @if (!notification.IsRead)
+                        {
+                            <span class="notif-dot"></span>
+                        }
+
+                    </a>
+                <div class="chat-action">
+                    <a class="chat-btn"
+                       href="@Url.Action("Index", "Chat", new { area = "User", userId = notification.UserId })">
+                        💬 Go to chat
+                    </a>
+                </div>
+                }
+        </div>
+            </div>
+ }
+
+    
+
+
  @if(User.IsInRole($"{DS.Role_Agent}"))
 {
 <div class="notifications-container">
@@ -20,10 +72,11 @@
     }
     else
     {
-        <div class="notif-list">
+         <div class="notif-list">
 
             @foreach (var notification in Model.NotificationListing)
             {
+                <div class="notif-wrapper">
                 <a href="@notification.Url"
                    class="notif-item"
                    onclick="markAsRead(@notification.Id, this)">
@@ -51,10 +104,16 @@
                     {
                         <span class="notif-dot"></span>
                     }
-
+                   
                 </a>
+                    <div class="notif-chat-action">
+                        <a class="chat-btn"
+                           href="@Url.Action("Index", "Chat", new { area = "User", userId = notification.FromUserId })">
+                            💬 Go to chat
+                        </a>
+                    </div>
+                </div>
             }
-
         </div>
     }
 
@@ -86,6 +145,7 @@
     }
     else
     {
+       <div class="notif-wrapper">
         <div class="notif-list">
 
             @foreach (var notification in Model.NotificationOwner)
@@ -122,7 +182,8 @@
             }
 
         </div>
-    }
+      </div>
+  }
 
 </div>
 }
@@ -160,6 +221,85 @@
     }
 </script>
 <style>
+    .notif-wrapper {
+        background: #343a40;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    /* notification link */
+    .notif-item {
+        display: flex;
+        gap: 10px;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* content */
+    .notif-content {
+        flex: 1;
+    }
+
+    /* chat button area */
+    .notif-chat-action {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    /* button */
+    .chat-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        font-size: 12px;
+        background: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 15px;
+        transition: 0.2s;
+    }
+
+        .chat-btn:hover {
+            background: #45a049;
+        }
+    .notif-item {
+        display: flex;
+        gap: 10px;
+        text-decoration: none;
+        padding: 10px;
+        position: relative;
+    }
+
+    .notif-content {
+        flex: auto ;
+    }
+
+    .notif-chat-action {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 10px 10px 10px;
+    }
+
+    .chat-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        font-size: 12px;
+        background: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 15px;
+        transition: 0.2s;
+    }
+
+        .chat-btn:hover {
+            background: #45a049;
+        }
     /* RESPONSIVE */
     @@media (max-width:768px) {
 
@@ -320,7 +460,7 @@
     }
     .notifications-container {
         max-width: 900px;
-        margin: 120px auto 40px;
+        margin: 7px auto 40px;
         padding: 20px;
     }
 

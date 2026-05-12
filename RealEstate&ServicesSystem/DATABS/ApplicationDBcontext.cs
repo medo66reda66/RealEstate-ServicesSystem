@@ -20,6 +20,7 @@ namespace RealEstate_ServicesSystem.DATABS
         public DbSet<Otps> Otps { get; set; } 
         public DbSet<Notification> notifications { get; set; } 
         public DbSet<Favorite> Favorites { get; set; } 
+        public DbSet<Massage> Massages { get; set; } 
 
         override protected void OnModelCreating(ModelBuilder modelBuilder)
         {
