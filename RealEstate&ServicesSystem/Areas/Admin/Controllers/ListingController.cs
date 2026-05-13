@@ -69,7 +69,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Agent},{DS.Role_Employee}")]
         public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
         {
-            var listing = await _listingRepository.GetoneAsync(e=>e.Unit.Id == id, includes: [l => l.Unit, p => p.Unit.Property], cancellationToken: cancellationToken, tracking: false);
+            var listing = await _listingRepository.GetoneAsync(e=>e.Id == id, includes: [l => l.Unit, p => p.Unit.Property], cancellationToken: cancellationToken, tracking: false);
             if (listing == null)
             {
                 return NotFound();
@@ -82,6 +82,12 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         public async Task<IActionResult> Add(int id,CancellationToken cancellationToken)
         {
             var user = await _userManager.GetUserAsync(User);
+
+            if (User.IsInRole(DS.Role_Admin))
+            {
+                user.paid = true;
+                await _userManager.UpdateAsync(user);
+            }
             var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             var ListingFromDb = await _listingRepository.GetAllAsync(
@@ -204,7 +210,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
             var user = await _userManager.GetUserAsync(User);
-            var listing = await _listingRepository.GetoneAsync(e => e.Id == id, cancellationToken: cancellationToken);
+            var listing = await _listingRepository.GetoneAsync(e => e.Id == id, includes: [l => l.Unit], cancellationToken: cancellationToken);
             var units = await _unitRepository.GetAllAsync(includes: [u => u.Property], cancellationToken: cancellationToken, tracking: false);
             if (listing == null)
             {
@@ -218,6 +224,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
                 Rentperiod = listing.Rentperiod,
                 Description = listing.Description,
                 createAt = listing.createAt,
+                Listing = listing,
                 Units = units.ToList()
             };
 

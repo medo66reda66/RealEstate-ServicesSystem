@@ -10,6 +10,8 @@
         public string Description { get; set; }
         public bool IsAvailable { get; set; } = true;
         public DateTime CreatedAt { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
 
         public string ApplicationuserId { get; set; }
         public Applicationuser? Applicationuser { get; set; }

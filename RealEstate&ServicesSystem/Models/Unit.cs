@@ -36,7 +36,9 @@
         public UnitPurpose Purpose { get; set; }
         public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
         public UnitType type { get; set; }
-      
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
         public List<UnitSupImg> UnitSupImgs { get; set; }
         public int propertyId { get; set; }
         public Property? Property { get; set; }

@@ -39,5 +39,7 @@ namespace RealEstate_ServicesSystem.Viewmodel
         public List<Property>? Property { get; set; }
         public string? DeletedImages { get; set; }
         public List<UnitSupImg>? ExistingUnitSupImgs { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; } 
     }
 }

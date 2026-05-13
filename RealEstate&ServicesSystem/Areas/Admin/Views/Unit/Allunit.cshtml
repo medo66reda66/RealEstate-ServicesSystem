@@ -55,12 +55,12 @@
 
 @if(User.IsInRole(DS.Role_Admin) || User.IsInRole(DS.Role_Employee))
  {
-<div class="d-flex justify-content-between align-items-center mb-4">
+@* <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="text-white">🏠 Units List</h3>
     <a href="/Admin/Unit/Add" class="btn btn-primary">
         <i class="bi bi-plus-circle"></i> Add Unit
     </a>
-</div>
+</div> *@
 
 <div class="filter-card">
 
@@ -129,8 +129,6 @@
             <th>AreaSize</th>
             <th>Rooms</th>
             <th>Floor</th>
-            <th>Main Image</th>
-            <th>Sub Images</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -170,32 +168,6 @@
                 <td>
                     @item.FloorNumber
                 </td>
-                
-
-                <!-- MAIN IMAGE -->
-                <td>
-                    <img src="~/UnitImages/@item.ImageUrl"
-                         style="width:70px;height:70px;object-fit:cover;border-radius:8px;" />
-                </td>
-
-                <!-- SUB IMAGES -->
-                <td>
-                    @if (item.UnitSupImgs != null && item.UnitSupImgs.Any())
-                    {
-                        <div style="display:flex; gap:5px; flex-wrap:wrap; justify-content:center;">
-                            @foreach (var img in item.UnitSupImgs)
-                            {
-                                <img src="~/UnitSupImages/@img.ImageUrl"
-                                     style="width:45px;height:45px;object-fit:cover;border-radius:5px;border:1px solid #555;" />
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <span class="text-muted">No Images</span>
-                    }
-                </td>
-
                 <!-- ACTIONS -->
                 <td>
                     <a asp-action="Details" asp-controller="Unit" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>

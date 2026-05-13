@@ -23,7 +23,8 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         private readonly ISupImgRepository _supImgRepository;
         private readonly UserManager<Applicationuser> _userManager;
         private readonly IEmailSender _emailSender;
-        public UnitController(IRepository<Unit> unitRepository, IRepository<Property> propertyRepository, IRepository<UnitSupImg> unitSupImgRepository, ISupImgRepository supImgRepository, UserManager<Applicationuser> userManager, IEmailSender emailSender)
+        private readonly IConfiguration _configuration;
+        public UnitController(IRepository<Unit> unitRepository, IRepository<Property> propertyRepository, IRepository<UnitSupImg> unitSupImgRepository, ISupImgRepository supImgRepository, UserManager<Applicationuser> userManager, IEmailSender emailSender, IConfiguration configuration)
         {
             _unitRepository = unitRepository;
             _propertyRepository = propertyRepository;
@@ -31,6 +32,7 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
             _supImgRepository = supImgRepository;
             _userManager = userManager;
             _emailSender = emailSender;
+            _configuration = configuration;
         }
         [Authorize(Roles = $"{DS.Role_Admin},{DS.Role_Employee},{DS.Role_Owner}")]
         public async Task<IActionResult> Allunit(FilterUnitVM filterUnitVM,CancellationToken cancellationToken, int page =1)
@@ -108,12 +110,19 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
         public async Task<IActionResult> Add(CancellationToken cancellationToken)
         {
             var user = await _userManager.GetUserAsync(User);
+            if (User.IsInRole(DS.Role_Admin))
+            {
+                user.paid = true;
+                await _userManager.UpdateAsync(user);
+            }
+            ViewBag.GoogleMapsApiKey = _configuration["GoogleMaps:ApiKey"];
             var vm = new AddUnitmodel()
             {
                 Property =await _propertyRepository.GetAllAsync(e => e.ApplicationuserId == user.Id,cancellationToken:cancellationToken,tracking:false),
                 Properties= await _propertyRepository.GetoneAsync(e=>e.ApplicationuserId == user.Id, includes: [equals=>equals.Applicationuser],cancellationToken:cancellationToken,tracking:false),
 
             };
+            
 
             return View(vm);
         }
@@ -142,6 +151,8 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
                         Purpose = addUnitmodel.Purpose,
                         type = addUnitmodel.type,
                         propertyId = addUnitmodel.propertyId,
+                        Latitude = addUnitmodel.Latitude,
+                        Longitude = addUnitmodel.Longitude,
                     };
                     if (addUnitmodel.ImageUrl != null && addUnitmodel.ImageUrl.Length > 0)
                     {
@@ -232,6 +243,8 @@ namespace RealEstate_ServicesSystem.Areas.Admin.Controllers
                 Price = unit.Price,
                 Description = unit.Description,
                 status = unit.status,
+                Latitude = unit.Latitude,
+                Longitude = unit.Longitude,
                 Purpose = unit.Purpose,
                 type = unit.type,
                 propertyId = unit.propertyId,

@@ -37,13 +37,19 @@
             </div>
 
             <!-- Rent Period -->
-            <div id="rentPeriodContainer">
-                <select asp-for="Rentperiod"
-                        asp-items="Html.GetEnumSelectList<RentPeriod>()">
-                    <option value="">Rent Period</option>
-                </select>
+            @if (Model.Listing.Unit.Purpose == UnitPurpose.Rent)
+            {
+                <div id="rentPeriodContainer">
+                    <select asp-for="Rentperiod"
+                            asp-items="Html.GetEnumSelectList<RentPeriod>()">
+                        <option value="">Rent Period</option>
+                    </select>
                 <span class="text-danger" asp-validation-for="Rentperiod"></span>
-            </div>
+                </div>
+            }else
+            {
+                
+            }
 
             <!-- Status -->
             <select asp-for="IsActive">

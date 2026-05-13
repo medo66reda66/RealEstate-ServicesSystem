@@ -16,5 +16,6 @@ namespace RealEstate_ServicesSystem.Viewmodel
 
         public string? Description { get; set; } = string.Empty;
         public DateTime createAt { get; set; } = DateTime.Now;
+        public Listing? Listing { get; set; }
     }
 }

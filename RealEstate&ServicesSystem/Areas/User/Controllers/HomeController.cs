@@ -24,15 +24,17 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
         private readonly IRepository<Notification> notificationRepository;
         private readonly IRepository<Favorite> favoriteRepository;
         private readonly UserManager<Applicationuser> userManager;
+        private readonly IConfiguration _configuration;
 
 
-        public HomeController(IRepository<Listing> listingRepository, IRepository<Unit> unitRepository, ILogger<HomeController> logger, UserManager<Applicationuser> userManager, IRepository<Property> propertyRepository, IRepository<Notification> notificationRepository, IRepository<Favorite> favoriteRepository)
+        public HomeController(IRepository<Listing> listingRepository, IRepository<Unit> unitRepository, ILogger<HomeController> logger, UserManager<Applicationuser> userManager, IRepository<Property> propertyRepository, IRepository<Notification> notificationRepository, IRepository<Favorite> favoriteRepository, IConfiguration configuration)
         {
             this.listingRepository = listingRepository;
             this.unitRepository = unitRepository;
             _logger = logger;
             this.userManager = userManager;
             this.propertyRepository = propertyRepository;
+            _configuration = configuration;
             this.notificationRepository = notificationRepository;
             this.favoriteRepository = favoriteRepository;
         }
@@ -187,7 +189,7 @@ namespace RealEstate_ServicesSystem.Areas.User.Controllers
         {
 
             var lis = await listingRepository.GetoneAsync(e => e.Id == id, includes: [l => l.Unit, l => l.Unit.Property, l => l.Unit.UnitSupImgs,c=>c.ApplicationUser], cancellationToken: cancellationToken, tracking: false);
-
+            ViewBag.GoogleMapsApiKey = _configuration["GoogleMaps:ApiKey"];
             return View(lis);
         }
 

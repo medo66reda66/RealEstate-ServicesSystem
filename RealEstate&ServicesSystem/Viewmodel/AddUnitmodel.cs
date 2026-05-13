@@ -39,5 +39,7 @@ namespace RealEstate_ServicesSystem.Viewmodel
         public int propertyId { get; set; }
         public IEnumerable<Property>? Property { get; set; }
         public Property? Properties { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
     }
 }

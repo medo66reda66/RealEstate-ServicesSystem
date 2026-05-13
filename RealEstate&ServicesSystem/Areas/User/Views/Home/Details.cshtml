@@ -130,8 +130,15 @@
             </div>
         </div>
     </div>
+    
+    <div id="map" style="height:400px; width:100%; border-radius:10px;"></div>
 
 </div>
+<a class="btn btn-primary"
+   href="https://www.google.com/maps?q=@Model.Unit.Latitude,@Model.Unit.Longitude"
+   target="_blank">
+    📍 View on Google Maps
+</a>
 <style>
     .action-buttons {
         display: flex;
@@ -369,6 +376,24 @@
 }
 </style>
 <script>
+    function initMap() {
+
+        const location = {
+            lat: @Model.Unit.Latitude,
+            lng: @Model.Unit.Longitude
+        };
+
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: location
+        });
+
+        new google.maps.Marker({
+            position: location,
+            map: map
+        });
+    }
+
         // تغيير الصورة
        // تغيير الصورة بسلاسة
     function changeImage(img) {
@@ -403,4 +428,7 @@
     window.addEventListener("load", () => {
         document.querySelector(".details-container").style.opacity = "1";
     });
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&callback=initMap">
 </script>

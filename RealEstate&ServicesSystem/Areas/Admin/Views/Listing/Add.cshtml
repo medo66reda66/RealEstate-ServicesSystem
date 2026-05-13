@@ -1,9 +1,11 @@
-﻿@model RealEstate_ServicesSystem.Viewmodel.AddListingmodel
+﻿@using RealEstate_ServicesSystem.Utilities.DBinitializer
+@model RealEstate_ServicesSystem.Viewmodel.AddListingmodel
 
 
 <div class="form-card">
     <h3>➕ Add New Listing</h3>
-
+@if (User.IsInRole(DS.Role_Agent))
+{
     @if (Model.Applicationuser.paid)
     {
         <div class="payment-box" style="background: #2e7d32; border-color: #1b5e20;">
@@ -19,7 +21,12 @@
             </a>
         </div>
     }
- </div>
+}else
+{
+    <div class="payment-box" style="background: #2e7d32; border-color: #1b5e20;">
+        <label>✅ You have permission to add a listing. Please fill the details below.</label>
+    </div>
+}
 
     <form method="post">
 

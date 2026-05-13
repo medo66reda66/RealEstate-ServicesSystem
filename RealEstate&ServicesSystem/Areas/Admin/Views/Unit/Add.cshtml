@@ -1,9 +1,11 @@
-﻿@using RealEstate_ServicesSystem.Viewmodel
+﻿@using RealEstate_ServicesSystem.Utilities.DBinitializer
+@using RealEstate_ServicesSystem.Viewmodel
 @model AddUnitmodel
 
 <h2 class="text-white mb-4">🏠 Add New Unit</h2>
 
-
+@if(User.IsInRole(DS.Role_Owner))
+{
     @if (Model.Properties.Applicationuser.paid)
     {
     <div class="payment-box" style="background: #2e7d32; border-color: #1b5e20;">
@@ -19,12 +21,19 @@
         </a>
     </div>
     }
+}else
+{
+    <div class="payment-box" style="background: #2e7d32; border-color: #1b5e20;">
+        <label>✅ You have permission to add a unit. Please fill the details below.</label>
+    </div>
+}
 
 <form  method="post"class="custom-form" enctype="multipart/form-data">
 
     <div class="row">
 
-        
+        <input asp-for="Latitude" id="lat" type="hidden" />
+        <input asp-for="Longitude" id="lng" type="hidden" />
         <!-- Unit Number -->
         @* <div class="col-md-4 mb-3">
             <label class="form-label text-light">Unit Number</label>
@@ -133,8 +142,14 @@
             </select>
             <span asp-validation-for="propertyId" class="text-danger"></span>
         </div>
+        <br />
+        
+        <div class="form-group mt-3">
+            <label>Select Unit Location</label>
+            <div id="map" style="height:400px"></div>
+        </div>
        
-        <button type="submit" class="btn btn-primary" @(Model.Properties.Applicationuser.paid ? "" : "disabled")>
+        <button type="submit" class="btn btn-primary mt-3" @(Model.Properties.Applicationuser.paid ? "" : "disabled")>
             Submit
         </button>
     </div>
@@ -190,6 +205,43 @@
 
 <script>
 
+    let map;
+    let marker;
+
+    window.initMap = function () {
+
+        console.log("MAP INIT");
+
+        const defaultLocation = { lat: 30.7906, lng: 31.0004 };
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 12,
+            center: defaultLocation
+        });
+
+        map.addListener("click", function (event) {
+
+            console.log("MAP CLICKED");
+
+            const location = {
+                lat: event.latLng.lat(),
+                lng: event.latLng.lng()
+            };
+
+            document.getElementById("lat").value = location.lat;
+            document.getElementById("lng").value = location.lng;
+
+            if (marker) marker.setMap(null);
+
+            marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+
+            map.setCenter(location);
+            map.setZoom(15);
+        });
+    };
     // Main Image Preview
     document.getElementById("mainImageInput").addEventListener("change", function (event) {
         const file = event.target.files[0];
@@ -250,4 +302,7 @@
             alert("⚠️ You must complete payment first!");
         }
     });
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&callback=initMap">
 </script>
